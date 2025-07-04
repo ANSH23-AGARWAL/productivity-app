@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
-<link rel="stylesheet" href="index.jsx" />
 
 const SignIn = ({setSignInUser}) => {
   const [email, setEmail] = useState('');
