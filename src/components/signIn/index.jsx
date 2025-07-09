@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
+import { Link } from 'react-router-dom';
 
 const SignIn = ({setSignInUser}) => {
   const [email, setEmail] = useState('');
@@ -38,6 +39,9 @@ const SignIn = ({setSignInUser}) => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Sign In</button>
+        <Link to="/sign-up" className='link'>
+          Don't have an account? Sign Up
+        </Link>
       </form>
     </Wrapper>
   );
