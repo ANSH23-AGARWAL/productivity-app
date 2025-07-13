@@ -1,60 +1,161 @@
 import styled from 'styled-components';
- const Wrapper = styled.div`
 
- 
-   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f5f5f5;
+const Wrapper = styled.div`
+  .background {
+    height: 100vh;
+    width: 100vw;
+    background: url(https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=1350&q=80
 
-  h2 {
-    margin-bottom: 20px;
-  }
-  h3 {
-    margin-bottom: 20px;
-    color: #555;
-  }
-  .social-login {
+)
+      no-repeat center center/cover;
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    align-items: center;
+  }
 
-    input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      width: 100px;
-      text-align: center;
-    }
+  .overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 10, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .signin-box {
+    width: 420px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .signin-box h2 {
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  .social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .google-btn,
+  .apple-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+
+  .google-btn {
+    background-color: #ffffff;
+    color: #333;
+  }
+
+  .apple-btn {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  .google-btn:hover {
+    background-color: #f1f1f1;
+  }
+
+  .apple-btn:hover {
+    background-color: #1a1a1a;
+  }
+
+  .google-btn img,
+  .apple-btn img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .divider {
+    color: #ccc;
+    margin: 20px 0;
+    font-size: 14px;
+    position: relative;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    height: 1px;
+    width: 40%;
+    background-color: #ccc;
+    position: absolute;
+    top: 50%;
+  }
+
+  .divider::before {
+    left: 0;
+  }
+
+  .divider::after {
+    right: 0;
   }
 
   form {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    gap: 18px;
+  }
 
-    input {
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+  input {
+    padding: 12px 16px;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+  }
 
-    button {
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+  input:focus {
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.4);
+  }
 
-      &:hover {
-        background-color: #0056b3;
-      }
-    }
+  button[type='submit'] {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button[type='submit']:hover {
+    background-color: #0056b3;
+  }
+
+  .footer-text {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #ddd;
+  }
+
+  .footer-text span {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: underline;
   }
 `;
+
 export default Wrapper;
