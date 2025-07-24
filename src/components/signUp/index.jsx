@@ -34,7 +34,7 @@ const SignUp = () => {
             <div className="social-login">
               <button className="google-btn" onClick={handleGoogleLogin}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                  src="/google_logo.svg"
                   alt="Google"
                 />
                 <span>Sign up with Google</span>
@@ -42,7 +42,7 @@ const SignUp = () => {
 
               <button className="apple-btn" onClick={handleAppleLogin}>
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
+                  src="/apple_logo.svg"
                   alt="Apple"
                 />
                 <span>Sign up with Apple</span>

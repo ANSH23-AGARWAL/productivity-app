@@ -81,8 +81,31 @@ const Wrapper = styled.div`
 
   .google-btn img,
   .apple-btn img {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 2px;
+    margin-right: 10px;
+  }
+  .google-btn span,
+  .apple-btn span {
+    flex: 1;
+    text-align: left;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+  .google-btn,
+  .apple-btn {
+    min-height: 48px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: box-shadow 0.2s;
+  }
+  .google-btn:hover,
+  .apple-btn:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   }
 
   .divider {
