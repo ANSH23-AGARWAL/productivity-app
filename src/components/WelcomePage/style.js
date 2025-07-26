@@ -2,8 +2,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
 
- height: 100vh;
-  overflow: hidden;
+ min-height: 100vh;
 
 
   .welcome-container {
@@ -89,7 +88,7 @@ const Wrapper = styled.div`
   }
   .welcome-right {
     flex: 1;
-    background: #233a63;
+     background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -98,36 +97,57 @@ const Wrapper = styled.div`
     width: 50vw;
     position: relative;
     padding: 0;
+    /* no overlay */
   }
-  .header-bar {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 32px;
-    padding: 32px 0 0 48px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #fff;
-    background: #1a3557;
-    min-height: 70px;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 32px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
-  .nav-link {
-    color: #fff;
-    cursor: pointer;
-    transition: color 0.2s;
-    font-family: 'Segoe UI', sans-serif;
-    letter-spacing: 0.5px;
-  }
-  .nav-link:hover {
-    color: #6bb3a6;
-  }
+
+  
+.header-bar {
+  width: 80%;
+  margin: 24px auto 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px; /* spacing between items */
+  padding: 20px 32px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(21, 48, 91, 0.85);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.header-bar .nav-link,
+.header-bar .auth-btn {
+  white-space: nowrap;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  transition: 0.3s ease;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.header-auth-buttons {
+  display: flex;
+  gap: 24px; /* Log In and Sign Up ke beech gap */
+}
+
+.header-bar .nav-link:hover,
+.header-bar .auth-btn:hover {
+  background: linear-gradient(90deg, #00ffd0 0%, #00bfff 30%, #a259e6 60%, #ffe066 85%, #ff7e5f 100%);
+  box-shadow: 0 4px 16px rgba(0, 255, 208, 0.3);
+  transform: scale(1.05);
+  border-radius: 18px;
+}
+
+
+  
   .welcome-content {
     display: flex;
     flex-direction: column;
@@ -156,32 +176,39 @@ const Wrapper = styled.div`
     min-height: calc(100vh - 70px);
     width: 100%;
     text-align: left;
-    padding: 60px 80px 0 80px;
+    padding: 120px 80px 0 80px;
     color: #fff;
+    /* no overlay */
   }
-  .welcome-heading-gradient {
-    font-size: 3.2rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #6bb3a6 10%, #fff 50%, #f7c873 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    margin-bottom: 28px;
-    letter-spacing: 1px;
-  }
+
   .welcome-heading-big {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 32px;
-    margin-top: 0;
-    background: linear-gradient(90deg, #6bb3a6 10%, #fff 50%, #f7c873 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    letter-spacing: 1.5px;
-  }
+  font-size: 15rem;
+  font-weight: 900;
+  background: linear-gradient(
+    270deg,
+    #ff7e5f,
+    #ffe066,
+    #00ffd0,
+    #00bfff,
+    #a259e6,
+    #ff7e5f
+  );
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  text-align: left;
+  text-shadow: 0 0 30px rgba(0, 255, 208, 0.4), 0 0 60px rgba(162, 89, 230, 0.3);
+  animation: gradientFlow 6s linear infinite;
+ }
+  @keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
   .welcome-content h2 {
     font-size: 2.2rem;
     color: #fff;
@@ -204,11 +231,12 @@ const Wrapper = styled.div`
   }
   .large-intro.left-message {
     font-size: 1.5rem;
-    color: #e0e6ef;
+    color: #f5f8ff;
     margin-bottom: 48px;
     max-width: 700px;
-    line-height: 1.7;
+    line-height: 2.1;
     text-align: left;
+    letter-spacing: 0.02em;
   }
   .contact-info {
     font-size: 1rem;
@@ -219,56 +247,7 @@ const Wrapper = styled.div`
   .contact-info div {
     margin-bottom: 4px;
   }
-  .auth-buttons {
-    display: flex;
-    gap: 18px;
-    margin-top: 18px;
-  }
-  .auth-btn {
-    padding: 12px 32px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  .auth-btn.signin {
-    background: #fff;
-    color: #233a63;
-  }
-  .auth-btn.signup {
-    background: #6bb3a6;
-    color: #fff;
-  }
-  .auth-btn:hover {
-    background: #1a3557;
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  }
-  .auth-btn.dark-btn {
-    background: #1a3557;
-    color: #fff;
-    border: none;
-    outline: none;
-    padding: 14px 38px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  }
-  .auth-btn.dark-btn:hover {
-    background: #6bb3a6;
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  }
+
   @media (max-width: 900px) {
     .welcome-container {
       flex-direction: column;
@@ -328,6 +307,38 @@ const Wrapper = styled.div`
       max-width: 90vw;
       max-height: 40vh;
     }
+  }
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+
+  .hero-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    background: radial-gradient(circle at 60% 40%, #233a63 60%, #6a4bc7 100%);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  
+  .large-intro.left-message {
+    font-size: 1.1rem;
+    color: #fafdff;
+    margin-bottom: 48px;
+    max-width: 700px;
+    line-height: 2.2;
+    text-align: left;
+    letter-spacing: 0.03em;
+    font-weight: 400;
+    text-shadow: 0 2px 12px #1a355755;
+    margin-top: 18px;
+  }
+
+
+  .header-bar {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  }
+  .welcome-content.left-align {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   }
 `;
 
