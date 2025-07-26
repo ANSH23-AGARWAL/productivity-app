@@ -9,7 +9,7 @@ const Wrapper = styled.div`
 
   .left-panel {
     flex: 1;
-    background: url('/BoardWiseApp.png') no-repeat center center/cover;
+    background: url('/ebf92a52.png') no-repeat center center/cover;
   }
 
   .right-panel {
