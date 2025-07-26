@@ -61,19 +61,19 @@ const SignUp = () => {
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                placeholder "Full Name"
+                placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <input
                 type="email"
-                placeholder "Email"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <input
                 type="password"
-                placeholder "Password"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
