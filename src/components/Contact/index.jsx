@@ -15,30 +15,38 @@ const Contact = () => {
               <div className="contact-detail"><span className="contact-icon">📍</span> Jaipur, Rajasthan, India</div>
               <div className="contact-detail"><span className="contact-icon">📞</span> +91 8104630812</div>
               <div className="contact-socials">
-                <a href="#" className="social-icon" aria-label="LinkedIn"><i className="fab fa-linkedin-in"></i></a>
-                <a href="#" className="social-icon" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
-                <a href="#" className="social-icon" aria-label="GitHub"><i className="fab fa-github"></i></a>
-                <a href="#" className="social-icon" aria-label="Instagram"><i className="fab fa-instagram"></i></a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn">
+                  <i className="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Twitter">
+                  <i className="fab fa-twitter"></i>
+                </a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="GitHub">
+                  <i className="fab fa-github"></i>
+                </a>
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
+                  <i className="fab fa-instagram"></i>
+                </a>
               </div>
             </div>
 
             <form className="contact-form">
               <label>Name
-                <input type="text" name="name" required />
+                <input type="text" name="name" placeholder="Your Name" required />
               </label>
               <label>Email
-                <input type="email" name="email" required />
+                <input type="email" name="email" placeholder="Your Email" required />
               </label>
               <label>Message
-                <textarea name="message" rows={4} required />
+                <textarea name="message" rows={4} placeholder="Your Message" required />
               </label>
-              <button type="submit">Send Message</button>
+              <button  type="submit">Send Message</button>
             </form>
           </div>
         </div>
       </div>
     </Wrapper>
-  );
+  )
 };
 
 export default Contact;

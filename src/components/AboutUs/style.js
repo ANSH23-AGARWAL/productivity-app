@@ -1,222 +1,270 @@
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  background: #233a63;
+
+  /* ✅ Background with soft gradient */
+   background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
   min-height: 100vh;
   width: 100vw;
-  font-family: 'Segoe UI', sans-serif;
-  .about-bg {
-    background: none;
-    min-height: 100vh;
-    width: 100vw;
-    padding: 0;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+
+  /* ✅ Glass Effect Main Container */
   .about-container {
+    max-width: 1100px;
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 64px 24px 48px 24px;
-    background: none;
-    border-radius: 0;
-    box-shadow: none;
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
+    animation: fadeIn 0.8s ease forwards;
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ✅ Main Heading */
   .about-heading-gradient {
-    font-size: 3.5rem;
-    font-weight: 900;
-    background: linear-gradient(90deg, #6bb3a6 10%, #fff 50%, #f7c873 90%);
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #00ffd0, #00bfff, #6bb3a6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    margin-bottom: 48px;
-    text-align: left;
-    letter-spacing: 1.5px;
+    margin-bottom: 32px;
+    text-align: center;
+    letter-spacing: 1px;
   }
+
+  /* ✅ Section Headings */
   .section-heading {
     color: #6bb3a6;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 18px;
-    margin-top: 48px;
+    margin: 40px 0 12px 0;
     text-align: left;
-    background: none;
-    padding: 0;
-    border-radius: 0;
+    position: relative;
   }
-  .about-section {
-    margin: 0 0 36px 0;
-    padding-bottom: 0;
-    border-bottom: none;
-    max-width: 900px;
+
+  /* ✅ Small underline accent */
+  .section-heading::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #00ffd0, #6bb3a6);
   }
-  h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 18px;
-    color: #6bb3a6;
-    text-align: left;
-  }
-  p, ul, li, .member-name, .member-role, .core-desc {
-    color: #f7f8fa;
-    text-align: left;
-    font-size: 1.15rem;
+
+  /* ✅ Paragraphs */
+  p {
+    font-size: 1.1rem;
     line-height: 1.7;
+    color: #e0e6ed;
+    margin-bottom: 18px;
   }
+
+  /* ✅ Bullet List */
   ul {
-    margin: 0 0 0 0;
     padding: 0;
-    font-size: 1.15rem;
-    line-height: 1.7;
+    margin: 0;
     list-style: none;
   }
+
   .why-list li {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    font-size: 1.05rem;
     display: flex;
     align-items: center;
-    font-size: 1.15rem;
+    transition: transform 0.25s ease;
   }
+
+  .why-list li:hover {
+    transform: translateX(5px);
+  }
+
   .checkmark-box {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: #6bb3a6;
-    color: #fff;
+    width: 22px;
+    height: 22px;
     border-radius: 6px;
-    font-size: 1.2rem;
-    margin-right: 14px;
-    box-shadow: 0 2px 8px #6bb3a633;
+    background: #00ffd0;
+    color: #0d1b2a;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 1rem;
   }
+
+  /* ✅ Core Values Cards */
   .core-values-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 32px;
-    margin-top: 18px;
-    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
   }
+
   .core-value {
-    background: #1a3557;
+    background: rgba(255,255,255,0.05);
     border-radius: 16px;
-    padding: 18px 24px;
-    min-width: 180px;
-    max-width: 220px;
-    box-shadow: 0 2px 8px rgba(26,53,87,0.07);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 24px;
+    min-width: 200px;
+    max-width: 240px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
+
+  .core-value:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0,255,208,0.2);
+  }
+
   .core-icon {
-    font-size: 2.1rem;
-    margin-bottom: 8px;
+    font-size: 2.2rem;
+    color: #00ffd0;
+    margin-bottom: 10px;
   }
+
   .core-label {
     font-size: 1.1rem;
     font-weight: 700;
     color: #6bb3a6;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
+
   .core-desc {
-    font-size: 1rem;
-    color: #f7f8fa;
-    opacity: 0.85;
+    font-size: 0.95rem;
+    color: #dfe6ed;
   }
-  .team-list {
-    display: flex;
-    gap: 56px;
-    flex-wrap: wrap;
-    margin-top: 32px;
-    justify-content: flex-start;
-  }
-  .team-member {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 130px;
-    margin-bottom: 32px;
-  }
-  .avatar-photo.big-frame, .avatar-placeholder.big-frame {
-    width: 150px;
-    height: 150px;
-    font-size: 3rem;
-    margin-bottom: 18px;
-    border-radius: 50%;
-    box-shadow: 0 4px 18px rgba(26,53,87,0.18);
-    object-fit: cover;
-    background: #fff;
-    color: #6bb3a6;
-    border: 7px solid #6bb3a6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-  }
-  .avatar-photo.big-frame {
-    object-position: center 20%;
-    display: block;
-  }
-  .member-name {
-    font-size: 1.3rem;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2px;
-  }
-  .member-role {
-    font-size: 1.1rem;
-    color: #6bb3a6;
-    font-weight: 500;
-    margin-top: 2px;
-    text-align: center;
-    margin-bottom: 2px;
-  }
-  .linkedin-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 6px;
-    color: #0A66C2;
-    transition: background 0.18s, border 0.18s, transform 0.15s, box-shadow 0.15s;
-    border-radius: 25px;
-    border: 2px solid #0A66C2;
-    width: 100px;
-    height: 32px;
-    background: #1a3557;
-    box-sizing: border-box;
-  }
-  .linkedin-link:hover {
-    transform: scale(1.08);
-    box-shadow: 0 2px 8px #0A66C233;
-    background: #eaf4fb;
-    border-color: #004182;
-  }
+
+ /* ✅ Team Section */
+.team-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px; /* thoda zyada spacing for clean look */
+  margin-top: 40px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ✅ Individual Member */
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.team-member:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 255, 208, 0.15);
+}
+
+/* ✅ Avatar */
+.avatar-photo {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 5px solid #00ffd0;
+  object-fit: cover;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 20px rgba(0, 255, 208, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-member:hover .avatar-photo {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 255, 208, 0.3);
+}
+
+/* ✅ Jitendra Yadav ki photo ke liye custom positioning */
+.team-member.jitendra .avatar-photo {
+  object-position: center 30%; /* Face ko niche shift karega */
+}
+
+
+/* ✅ Name & Role */
+.member-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.member-role {
+  font-size: 1.05rem;
+  color: #6bb3a6;
+  text-align: center;
+}
+  /* ✅ LinkedIn Button */
+.linkedin-link {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border-radius: 30px;
+  background: rgba(10, 102, 194, 0.15);
+  border: 2px solid #0A66C2;
+  color: #0A66C2;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.2);
+  backdrop-filter: blur(6px);
+}
+
+/* ✅ Icon ke liye thoda hover animation */
+.linkedin-link svg {
+  transition: transform 0.3s ease;
+}
+
+/* ✅ Hover Effect */
+.linkedin-link:hover {
+  background: #0A66C2;
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+}
+
+.linkedin-link:hover svg {
+  transform: rotate(8deg) scale(1.1);
+}
+
+
+
+  /* ✅ Mobile Responsive */
   @media (max-width: 900px) {
-    .about-heading-gradient {
-      font-size: 2.1rem;
-    }
     .about-container {
-      padding: 24px 4px;
+      padding: 40px 20px;
     }
-    .about-section {
-      max-width: 98vw;
+    .about-heading-gradient {
+      font-size: 2.2rem;
     }
-    .team-list {
-      gap: 18px;
+    .core-values-list {
+      justify-content: center;
     }
-    .avatar-photo.big-frame, .avatar-placeholder.big-frame {
-      width: 80px;
-      height: 80px;
-      font-size: 1.5rem;
-    }
-    .section-heading, h2 {
-      font-size: 1.2rem;
-      margin-top: 32px;
+    .avatar-photo {
+      width: 130px;
+      height: 130px;
     }
   }
 `;
 
-export default Wrapper; 
+export default Wrapper;
