@@ -1,16 +1,14 @@
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-
  min-height: 100vh;
-
-
+ width: 100vw;
+  overflow: hidden; /* Ensure no scroll */
+   
   .welcome-container {
-    display: flex;
-    min-height: 100vh;
+      display: flex;
+    height: 100vh;
     width: 100vw;
-    overflow: hidden;
-  }
   .welcome-left {
     flex: 1;
     background: #f5f4f1;
@@ -88,7 +86,7 @@ const Wrapper = styled.div`
   }
   .welcome-right {
     flex: 1;
-     background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
+    background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -101,6 +99,51 @@ const Wrapper = styled.div`
   }
 
   
+// .header-bar {
+//   width: 80%;
+//   margin: 24px auto 0;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 40px; /* spacing between items */
+//   padding: 20px 32px;
+//   font-size: 1.2rem;
+//   font-weight: 700;
+//   color: #fff;
+//   background: rgba(21, 48, 91, 0.85);
+//   backdrop-filter: blur(16px);
+//   border-radius: 24px;
+//   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+// }
+
+// .header-bar .nav-link,
+// .header-bar .auth-btn {
+//   white-space: nowrap;
+//   padding: 12px 32px;
+//   font-size: 1.1rem;
+//   font-weight: 600;
+//   color: #fff;
+//   background: transparent;
+//   border: none;
+//   text-decoration: none;
+//   transition: 0.3s ease;
+//   border-radius: 14px;
+//   cursor: pointer;
+// }
+
+// .header-auth-buttons {
+//   display: flex;
+//   gap: 24px; /* Log In and Sign Up ke beech gap */
+// }
+
+// .header-bar .nav-link:hover,
+// .header-bar .auth-btn:hover {
+//   background: linear-gradient(90deg, #00ffd0 0%, #00bfff 30%, #a259e6 60%, #ffe066 85%, #ff7e5f 100%);
+//   box-shadow: 0 4px 16px rgba(0, 255, 208, 0.3);
+//   transform: scale(1.05);
+//   border-radius: 18px;
+// }
+
 .header-bar {
   width: 80%;
   margin: 24px auto 0;
@@ -128,7 +171,7 @@ const Wrapper = styled.div`
   background: transparent;
   border: none;
   text-decoration: none;
-  transition: 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
   border-radius: 14px;
   cursor: pointer;
 }
@@ -138,13 +181,16 @@ const Wrapper = styled.div`
   gap: 24px; /* Log In and Sign Up ke beech gap */
 }
 
+/* ✅ Minimal, clean hover effect */
 .header-bar .nav-link:hover,
 .header-bar .auth-btn:hover {
-  background: linear-gradient(90deg, #00ffd0 0%, #00bfff 30%, #a259e6 60%, #ffe066 85%, #ff7e5f 100%);
-  box-shadow: 0 4px 16px rgba(0, 255, 208, 0.3);
-  transform: scale(1.05);
-  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08); /* subtle color change */
+  color: #00ffd0; /* text color change */
+  transform: translateY(-2px); /* slight lift */
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* soft shadow */
 }
+
 
 
   
@@ -181,29 +227,28 @@ const Wrapper = styled.div`
     /* no overlay */
   }
 
-  .welcome-heading-big {
-  font-size: 15rem;
-  font-weight: 900;
+  /* 🔹 Big Gradient Heading */
+ .welcome-heading-big {
+  font-size: 4.2rem;            /* ✅ Fixed size for desktop */
+  font-weight: 800;
   background: linear-gradient(
     270deg,
-    #ff7e5f,
-    #ffe066,
     #00ffd0,
     #00bfff,
     #a259e6,
+    #ffe066,
     #ff7e5f
   );
-  background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
   text-align: left;
-  text-shadow: 0 0 30px rgba(0, 255, 208, 0.4), 0 0 60px rgba(162, 89, 230, 0.3);
-  animation: gradientFlow 6s linear infinite;
- }
+  text-shadow: 0 0 15px rgba(0, 255, 208, 0.3);
+}
+
   @keyframes gradientFlow {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -340,6 +385,13 @@ const Wrapper = styled.div`
   .welcome-content.left-align {
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   }
+
+  @media (max-width: 900px) {
+  .welcome-heading-big {
+    font-size: 2.5rem;  /* ✅ Mobile aur tablet ke liye */
+  }
+}
+
 `;
 
 export default Wrapper; 

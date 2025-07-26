@@ -2,10 +2,10 @@ import React from 'react';
 import Wrapper from './style';
 
 const teamMembers = [
-  { name: 'Jitendra Yadav', role: 'Backend Developer & Architect', photo: '/Jitendra.jpeg', linkedin: 'https://linkedin.com/in/jitendrayadav00' },
+  { name: 'Jitendra Yadav', role: 'Frontend & Backend Developer & Architect', photo: '/Jitendra.jpeg', linkedin: 'https://linkedin.com/in/jitendrayadav00', className: 'jitendra' },
   { name: 'Arjun Gutam', role: 'Backend Developer & Architect', photo: '/Arjun Gutam.jpeg', linkedin: 'https://linkedin.com/in/arjun-gautam-52a752283/' },
   { name: 'Ansh Agarwal', role: 'UI/UX Designer & Frontend', photo: '/Ansh Agarwal.jpeg', linkedin: 'https://linkedin.com/in/ansh-agarwal-411951250/' },
-  { name: 'Rahul Saini', role: 'UI/UX Designer & Frontend', linkedin: 'https://linkedin.com/in/rahul-saini-85ba0a26a/' },
+  { name: 'Rahul Saini', role: 'UI/UX Designer & Frontend', photo: '/Rahul Saini.jpeg', linkedin: 'https://linkedin.com/in/rahul-saini-85ba0a26a/' },
 ];
 
 const whyBoardWise = [
@@ -42,18 +42,22 @@ const AboutUs = () => {
       <div className="about-bg">
         <div className="about-container">
           <h1 className="about-heading-gradient">About Us</h1>
+          
           <section className="about-section who-we-are">
             <h2 className="section-heading">Who We Are</h2>
             <p>BoardWise is your all-in-one productivity hub designed to bring structure and clarity to your personal tasks, team workflows, and organizational goals. Whether you're a solo entrepreneur, a startup team, or a large enterprise – BoardWise helps you plan smarter, collaborate faster, and get things done.</p>
           </section>
+
           <section className="about-section our-mission">
             <h2 className="section-heading">Our Mission</h2>
             <p>To simplify how people manage work. We believe productivity shouldn't be complex – so we’ve built a platform that feels intuitive, looks beautiful, and works seamlessly.</p>
           </section>
+
           <section className="about-section our-vision">
             <h2 className="section-heading">Our Vision</h2>
             <p>To empower users with clarity, control, and collaboration – all in one visual workspace.<br/>We envision a world where work doesn't feel like work, but like progress.</p>
           </section>
+
           <section className="about-section why-boardwise">
             <h2 className="section-heading">Why BoardWise?</h2>
             <ul className="why-list">
@@ -62,6 +66,7 @@ const AboutUs = () => {
               ))}
             </ul>
           </section>
+
           <section className="about-section core-values">
             <h2 className="section-heading">Our Core Values</h2>
             <div className="core-values-list">
@@ -74,11 +79,12 @@ const AboutUs = () => {
               ))}
             </div>
           </section>
+
           <section className="about-section our-team">
             <h2 className="section-heading">Meet the Team</h2>
             <div className="team-list">
               {teamMembers.map((member, idx) => (
-                <div className="team-member" key={idx}>
+                <div className={`team-member ${member.className || ''}`} key={idx}>
                   {member.photo ? (
                     <img src={member.photo} alt={member.name} className="avatar-photo big-frame" />
                   ) : (
@@ -99,4 +105,4 @@ const AboutUs = () => {
   );
 };
 
-export default AboutUs; 
+export default AboutUs;

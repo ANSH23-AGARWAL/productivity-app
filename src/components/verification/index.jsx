@@ -28,11 +28,16 @@ const VerifyCode = () => {
 
   return (
     <Wrapper>
-      <div className="background">
-        <div className="overlay">
-          <div className="otp-container">
+      <div className="container">
+        {/* ✅ Left Image Panel */}
+        <div className="left-panel" />
+
+        {/* ✅ Right OTP Panel */}
+        <div className="right-panel">
+          <div className="otp-box">
             <h2>Verify Code</h2>
             <p>Enter the 6-digit code sent to your email</p>
+
             <form onSubmit={handleSubmit}>
               <div className="otp-inputs">
                 {otp.map((digit, index) => (
@@ -46,8 +51,12 @@ const VerifyCode = () => {
                   />
                 ))}
               </div>
+
               <button type="submit">Verify</button>
-              <p className="resend-text">Didn't receive code? <span>Resend</span></p>
+
+              <p className="resend-text">
+                Didn't receive code? <span>Resend</span>
+              </p>
             </form>
           </div>
         </div>
