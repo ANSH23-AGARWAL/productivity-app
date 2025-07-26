@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,38 +13,37 @@ const SignIn = () => {
       alert('Please fill in all fields');
       return;
     }
-    alert(`Welcome back, ${email}!`);
+
+    alert('Form submitted');
+
+    navigate('/verification');
   };
 
   const handleGoogleLogin = () => {
-    alert('Google Login Clicked');
+    alert('Google login clicked');
   };
 
   const handleAppleLogin = () => {
-    alert('Apple Login Clicked');
+    alert('Apple login clicked');
   };
 
   return (
     <Wrapper>
-      <div className="background">
-        <div className="overlay">
+      <div className="container">
+        <div className="left-panel" />
+
+        <div className="right-panel">
           <div className="signin-box">
             <h2>Sign In</h2>
 
             <div className="social-login">
-              <button className="google-btn" onClick={handleGoogleLogin}>
-                <img
-                  src="/google_logo.svg"
-                  alt="Google"
-                />
-                <span>Sign in with Google</span>
+              <button className="social-btn google" onClick={handleGoogleLogin}>
+                <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google" />
+                Sign in with Google
               </button>
-              <button className="apple-btn" onClick={handleAppleLogin}>
-                <img
-                  src="/apple_logo.svg"
-                  alt="Apple"
-                />
-                <span>Sign in with Apple</span>
+              <button className="social-btn apple" onClick={handleAppleLogin}>
+                <img src="https://cdn-icons-png.flaticon.com/512/179/179309.png" alt="Apple" />
+                Sign in with Apple
               </button>
             </div>
 
@@ -52,24 +52,22 @@ const SignIn = () => {
             <form onSubmit={handleSubmit}>
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
               <button type="submit">Sign In</button>
             </form>
 
-            <p className="footer-text">
-              New here? <Link to="/sign-up">SignUp</Link>
-            </p>
+            <div className="footer-text">
+              Don’t have an account? <Link to="/sign-up">Sign Up</Link>
+            </div>
           </div>
         </div>
       </div>

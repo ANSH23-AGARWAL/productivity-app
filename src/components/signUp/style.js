@@ -1,42 +1,40 @@
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  .background {
-    height: 100vh;
-    width: 100vw;
-    background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80')
-      no-repeat center center/cover;
+  .container {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    height: 100vh;
+    width: 100%;
   }
 
-  .overlay {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(10, 10, 10, 0.4);
+  .left-panel {
+    flex: 1;
+    background: url('/ebf92a52.png') no-repeat center center;
+    background-size: cover;
+  }
+
+  .right-panel {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #f9f9f9;
   }
 
   .signup-box {
-    width: 420px;
+    width: 100%;
+    max-width: 400px;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    color: #fff;
-    font-family: 'Segoe UI', sans-serif;
   }
 
   .signup-box h2 {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     font-size: 28px;
-    font-weight: 600;
+    color: #333;
   }
 
   .social-login {
@@ -46,72 +44,37 @@ const Wrapper = styled.div`
     margin-bottom: 20px;
   }
 
-  .google-btn,
-  .apple-btn {
+  .social-btn {
     display: flex;
     align-items: center;
+    gap: 10px;
     justify-content: center;
-    gap: 12px;
-    padding: 12px 20px;
-    font-size: 15px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
     cursor: pointer;
-    transition: 0.3s ease;
-  }
-
-  .google-btn {
-    background-color: #ffffff;
-    color: #333;
-  }
-
-  .apple-btn {
-    background-color: #000000;
-    color: #ffffff;
-  }
-
-  .google-btn:hover {
-    background-color: #f1f1f1;
-  }
-
-  .apple-btn:hover {
-    background-color: #1a1a1a;
-  }
-
-  .google-btn img,
-  .apple-btn img {
-    width: 28px;
-    height: 28px;
+    transition: background 0.3s ease;
     background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 2px;
-    margin-right: 10px;
   }
-  .google-btn span,
-  .apple-btn span {
-    flex: 1;
-    text-align: left;
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: 0.2px;
+
+  .social-btn img {
+    width: 20px;
+    height: 20px;
   }
-  .google-btn,
-  .apple-btn {
-    min-height: 48px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    transition: box-shadow 0.2s;
+
+  .social-btn.google:hover {
+    background: #f0f0f0;
   }
-  .google-btn:hover,
-  .apple-btn:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+
+  .social-btn.apple:hover {
+    background: #e8e8e8;
   }
 
   .divider {
-    color: #ccc;
-    margin: 20px 0;
+    margin: 15px 0;
     font-size: 14px;
+    color: #777;
     position: relative;
   }
 
@@ -120,7 +83,7 @@ const Wrapper = styled.div`
     content: '';
     height: 1px;
     width: 40%;
-    background-color: #ccc;
+    background: #ccc;
     position: absolute;
     top: 50%;
   }
@@ -136,46 +99,56 @@ const Wrapper = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 12px;
   }
 
-  input {
-    padding: 12px 16px;
-    font-size: 15px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
+  form input {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
   }
 
-  input:focus {
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.4);
-  }
-
-  button[type='submit'] {
-    padding: 12px;
-    font-size: 16px;
-    background-color: #007bff;
+  form button {
+    margin-top: 10px;
+    padding: 10px;
+    background: #4f46e5;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
+    font-weight: bold;
     cursor: pointer;
+    transition: background 0.3s ease;
   }
 
-  button[type='submit']:hover {
-    background-color: #0056b3;
+  form button:hover {
+    background: #4338ca;
   }
 
   .footer-text {
-    margin-top: 18px;
+    margin-top: 16px;
     font-size: 14px;
-    color: #ddd;
   }
 
-  .footer-text span {
-    color: #fff;
-    cursor: pointer;
-    text-decoration: underline;
+  .footer-text a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+
+    .left-panel {
+      display: none;
+    }
+
+    .right-panel {
+      flex: none;
+      height: 100vh;
+    }
   }
 `;
 
