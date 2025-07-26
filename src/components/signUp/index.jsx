@@ -1,51 +1,58 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !email || !password) {
+
+    if (!name || !email || !password || !confirmPassword) {
       alert('Please fill in all fields');
       return;
     }
+
+    
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
     alert(`Welcome ${name}, your account is created!`);
+
+    navigate('/verification');
   };
 
   const handleGoogleLogin = () => {
-    alert('Google Login Clicked');
+    alert('Google login clicked');
   };
 
   const handleAppleLogin = () => {
-    alert('Apple Login Clicked');
+    alert('Apple login clicked');
   };
 
   return (
     <Wrapper>
-      <div className="background">
-        <div className="overlay">
+      <div className="container">
+        <div className="left-panel" />
+        
+        <div className="right-panel">
           <div className="signup-box">
             <h2>Create Account</h2>
 
             <div className="social-login">
-              <button className="google-btn" onClick={handleGoogleLogin}>
-                <img
-                  src="/google_logo.svg"
-                  alt="Google"
-                />
-                <span>Sign up with Google</span>
+              <button className="social-btn google" onClick={handleGoogleLogin}>
+                <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google" />
+                Sign up with Google
               </button>
-
-              <button className="apple-btn" onClick={handleAppleLogin}>
-                <img
-                  src="/apple_logo.svg"
-                  alt="Apple"
-                />
-                <span>Sign up with Apple</span>
+              <button className="social-btn apple" onClick={handleAppleLogin}>
+                <img src="https://cdn-icons-png.flaticon.com/512/179/179309.png" alt="Apple" />
+                Sign up with Apple
               </button>
             </div>
 
@@ -54,38 +61,34 @@ const SignUp = () => {
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                placeholder="Full Name"
+                placeholder "Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
               />
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder "Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder "Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
               <input
                 type="password"
-                placeholder='Confirm Password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <button type="submit">Sign Up</button>
             </form>
 
-            <p className="footer-text">
+            <div className="footer-text">
               Already registered? <Link to="/">Sign In</Link>
-            </p>
+            </div>
           </div>
         </div>
       </div>
