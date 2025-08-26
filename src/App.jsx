@@ -5,8 +5,13 @@ import Verification from './components/verification'
 import WelcomePage from './components/WelcomePage';
 import AboutUs from './components/AboutUs';
 import Contact from './components/Contact';
+<<<<<<< HEAD
+import HomePage from './components/HomePage';
+import Dashboard from './components/Dashboard';
+=======
 import Dashboard from './components/Dashboard';
 import BoardPage from './components/BoardPage';
+>>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
 
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -22,9 +27,14 @@ const App = () => {
       <Route path="/verification" element={<Verification />} />
       <Route path="/about-us" element={<AboutUs />} />
       <Route path="/contact" element={<Contact />} />
+<<<<<<< HEAD
+      <Route path="/home" element={<HomePage />} />
+      <Route path="/dash" element={<Dashboard />} />
+=======
       <Route path="/board" element={<BoardPage />} />
       <Route path="/dash" element={<Dashboard />} />
 
+>>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
     </Routes>  
     </BrowserRouter> 
       
