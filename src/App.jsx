@@ -5,7 +5,7 @@ import Verification from './components/verification'
 import WelcomePage from './components/WelcomePage';
 import AboutUs from './components/AboutUs';
 import Contact from './components/Contact';
-import HomePage from './components/HomePage';
+import Dashboard from './components/Dashboard';
 import BoardPage from './components/BoardPage';
 
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
@@ -22,8 +22,9 @@ const App = () => {
       <Route path="/verification" element={<Verification />} />
       <Route path="/about-us" element={<AboutUs />} />
       <Route path="/contact" element={<Contact />} />
-      <Route path="/home" element={<HomePage />} />
       <Route path="/board" element={<BoardPage />} />
+      <Route path="/dash" element={<Dashboard />} />
+
     </Routes>  
     </BrowserRouter> 
       
