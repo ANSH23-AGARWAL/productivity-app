@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
+import { Link, useNavigate } from 'react-router-dom';
 
 const VerifyCode = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+
+  const navigate = useNavigate();
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -21,6 +24,7 @@ const VerifyCode = () => {
     const enteredOtp = otp.join('');
     if (enteredOtp.length === 6) {
       alert(`OTP entered: ${enteredOtp}`);
+      navigate('/dash');
     } else {
       alert('Please enter all 6 digits');
     }
@@ -57,6 +61,7 @@ const VerifyCode = () => {
               <p className="resend-text">
                 Didn't receive code? <span>Resend</span>
               </p>
+  
             </form>
           </div>
         </div>

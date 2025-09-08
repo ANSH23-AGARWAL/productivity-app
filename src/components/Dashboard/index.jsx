@@ -1,8 +1,6 @@
+// index.jsx
 import React, { useState, useRef, useEffect } from 'react';
-<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
-=======
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -15,12 +13,7 @@ import {
   X,
   Archive,
   Trash2,
-  Users,
   LayoutTemplate,
-<<<<<<< HEAD
-  Home,
-=======
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
   ChevronDown,
 } from 'lucide-react';
 
@@ -28,11 +21,7 @@ import {
   AppWrapper,
   GlobalStyle,
   Header,
-<<<<<<< HEAD
   ContentWrapper,
-=======
-  ContentWrapper, // Naya component jo LeftBox aur ContentArea ko wrap karega
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
   ContentArea,
   LeftBox,
   RightPanel,
@@ -43,27 +32,14 @@ import {
   ProfileSlidePanel,
   ThemeToggleButton,
   MemberSelect,
-<<<<<<< HEAD
   PrioritySelect,
-  AddCardFloatingButton // Naya Component
-=======
-  PrioritySelect
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
+  AddCardFloatingButton
 } from './style.js';
 
 const BoardPage = () => {
-  const [inboxOpen, setInboxOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
-  const [trashSlideOpen, setTrashSlideOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(null);
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
-<<<<<<< HEAD
   const [theme, setTheme] = useState('dark');
-=======
-  const [theme, setTheme] = useState('dark'); // 'light' or 'dark'
-
-  // Card states
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
   const [cardTitle, setCardTitle] = useState('');
   const [cardDescription, setCardDescription] = useState('');
   const [cardDueDate, setCardDueDate] = useState(new Date());
@@ -73,38 +49,25 @@ const BoardPage = () => {
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [templateName, setTemplateName] = useState('');
 
-<<<<<<< HEAD
   const navigate = useNavigate();
 
-=======
-
-  // Refs for click outside
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
   const inboxRef = useRef(null);
   const profileRef = useRef(null);
   const templatesModalRef = useRef(null);
   const trashSlideRef = useRef(null);
   const addCardModalRef = useRef(null);
 
-<<<<<<< HEAD
   const membersList = ['Alice', 'Bob', 'Charlie', 'David'];
-=======
-  const membersList = ['Alice', 'Bob', 'Charlie', 'David']; // Example members
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (inboxRef.current && !inboxRef.current.contains(event.target)) {
-        setInboxOpen(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setProfileOpen(false);
-      }
-      if (templatesModalRef.current && !templatesModalRef.current.contains(event.target)) {
-        setTemplatesModalOpen(false);
-      }
-      if (trashSlideRef.current && !trashSlideRef.current.contains(event.target)) {
-        setTrashSlideOpen(false);
+      if (
+        (panelOpen === 'inbox' && inboxRef.current && !inboxRef.current.contains(event.target)) ||
+        (panelOpen === 'profile' && profileRef.current && !profileRef.current.contains(event.target)) ||
+        (panelOpen === 'templates' && templatesModalRef.current && !templatesModalRef.current.contains(event.target)) ||
+        (panelOpen === 'trash' && trashSlideRef.current && !trashSlideRef.current.contains(event.target))
+      ) {
+        setPanelOpen(null);
       }
       if (addCardModalRef.current && !addCardModalRef.current.contains(event.target)) {
         setAddCardModalOpen(false);
@@ -112,15 +75,9 @@ const BoardPage = () => {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [panelOpen, addCardModalOpen]);
 
-<<<<<<< HEAD
-=======
-  // Theme change effect
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
@@ -147,10 +104,6 @@ const BoardPage = () => {
     setCards((prevCards) => [...prevCards, newCard]);
     toast.success('Card added successfully!');
     setAddCardModalOpen(false);
-<<<<<<< HEAD
-=======
-    // Reset form fields
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
     setCardTitle('');
     setCardDescription('');
     setCardDueDate(new Date());
@@ -164,7 +117,7 @@ const BoardPage = () => {
       return;
     }
     toast.success(`Template "${templateName}" added!`);
-    setTemplatesModalOpen(false);
+    setPanelOpen(null);
     setTemplateName('');
   };
 
@@ -181,45 +134,31 @@ const BoardPage = () => {
     <AppWrapper data-theme={theme}>
       <GlobalStyle />
       <Toaster position="bottom-right" />
-<<<<<<< HEAD
-=======
-
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
       <Header>
         <div className="header-left">
           <div className="logo">Boardwise</div>
         </div>
         <div className="header-right">
-          <button className="icon-button" onClick={() => setInboxOpen(!inboxOpen)}>
+          <button className="icon-button" onClick={() => setPanelOpen(panelOpen === 'inbox' ? null : 'inbox')}>
             <Bell size={20} /> Inbox
           </button>
-          <button className="icon-button" onClick={() => setProfileOpen(!profileOpen)}>
+          <button className="icon-button" onClick={() => setPanelOpen(panelOpen === 'profile' ? null : 'profile')}>
             <UserCircle size={20} /> Profile
           </button>
         </div>
       </Header>
-<<<<<<< HEAD
       <ContentWrapper>
-=======
-
-      <ContentWrapper>
-        {/* Left Box (Wireframe inspired) */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
         <LeftBox>
           <div className="left-box-buttons">
-            <button className="left-box-button" onClick={() => setTemplatesModalOpen(true)}>
+            <button className="left-box-button" onClick={() => setPanelOpen(panelOpen === 'templates' ? null : 'templates')}>
               <LayoutTemplate size={20} /> Templates
             </button>
-            <button className="left-box-button" onClick={() => setTrashSlideOpen(true)}>
+            <button className="left-box-button" onClick={() => setPanelOpen(panelOpen === 'trash' ? null : 'trash')}>
               <Trash2 size={20} /> Trash
             </button>
           </div>
-          <button className="invite-member-button">
-            <Users size={20} /> Invite Members
-          </button>
         </LeftBox>
-<<<<<<< HEAD
-        <ContentArea inboxOpen={inboxOpen} profileOpen={profileOpen}>
+        <ContentArea panelOpen={panelOpen}>
           <div className="main-content">
             <div className="card-grid">
               {cards.map((card) => (
@@ -229,7 +168,9 @@ const BoardPage = () => {
                   <div className="card-details">
                     <span>Due: {card.dueDate}</span>
                     <span>Member: {card.member || 'N/A'}</span>
-                    <span>Priority: <span className={`priority-${card.priority.toLowerCase()}`}>{card.priority}</span></span>
+                    <span>
+                      Priority: <span className={`priority-${card.priority.toLowerCase()}`}>{card.priority}</span>
+                    </span>
                   </div>
                   <div className="card-footer">Last updated: {card.lastUpdated}</div>
                   <button className="delete-card-button" onClick={() => handleDeleteCard(card.id)}>Delete</button>
@@ -247,63 +188,22 @@ const BoardPage = () => {
               <div className="deadlines-placeholder">
                 <p>No upcoming deadlines.</p>
               </div>
-=======
-
-        {/* Main Content Area */}
-        <ContentArea inboxOpen={inboxOpen} profileOpen={profileOpen}>
-          <div className="main-content">
-            <h1 className="welcome-text">Welcome</h1>
-
-            <div className="add-card-section">
-              <button className="add-card-button" onClick={() => setAddCardModalOpen(true)}>
-                <Plus size={24} /> Add a new card
-              </button>
-              <div className="card-grid">
-                {cards.map((card) => (
-                  <div key={card.id} className="card-item">
-                    <h3>{card.title}</h3>
-                    <p>{card.description}</p>
-                    <div className="card-details">
-                      <span>Due: {card.dueDate}</span>
-                      <span>Member: {card.member || 'N/A'}</span>
-                      <span>Priority: <span className={`priority-${card.priority.toLowerCase()}`}>{card.priority}</span></span>
-                    </div>
-                    <div className="card-footer">Last updated: {card.lastUpdated}</div>
-                    <button className="delete-card-button" onClick={() => handleDeleteCard(card.id)}>Delete</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="recent-viewed-section">
-              <h2>Recent Viewed Boards</h2>
-              <div className="recent-boards-placeholder">No recent boards to display.</div>
-            </div>
-
-            <div className="upcoming-deadlines-section">
-              <h2>Upcoming Deadlines</h2>
-              <div className="deadlines-placeholder">No upcoming deadlines.</div>
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
             </div>
           </div>
         </ContentArea>
       </ContentWrapper>
-<<<<<<< HEAD
-      {/* Add Card Floating Button Component */}
-      <AddCardFloatingButton>
-          <button onClick={() => setAddCardModalOpen(true)}>
-            <Plus size={24} />
-          </button>
-      </AddCardFloatingButton>
-=======
 
-      {/* Inbox Slide Panel */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
-      {inboxOpen && (
+      <AddCardFloatingButton>
+        <button onClick={() => setAddCardModalOpen(true)}>
+          <Plus size={24} />
+        </button>
+      </AddCardFloatingButton>
+
+      {panelOpen === 'inbox' && (
         <RightPanel ref={inboxRef} type="inbox">
           <div className="panel-header">
             <h3>Notifications</h3>
-            <button className="close-button" onClick={() => setInboxOpen(false)}><X size={20} /></button>
+            <button className="close-button" onClick={() => setPanelOpen(null)}><X size={20} /></button>
           </div>
           <div className="panel-content">
             <div className="empty-state">
@@ -314,16 +214,11 @@ const BoardPage = () => {
           </div>
         </RightPanel>
       )}
-<<<<<<< HEAD
-=======
-
-      {/* Profile Slide Panel */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
-      {profileOpen && (
+      {panelOpen === 'profile' && (
         <ProfileSlidePanel ref={profileRef} type="profile">
           <div className="panel-header">
             <h3>My Profile</h3>
-            <button className="close-button" onClick={() => setProfileOpen(false)}><X size={20} /></button>
+            <button className="close-button" onClick={() => setPanelOpen(null)}><X size={20} /></button>
           </div>
           <div className="panel-content">
             <div className="profile-info">
@@ -349,12 +244,7 @@ const BoardPage = () => {
           </div>
         </ProfileSlidePanel>
       )}
-<<<<<<< HEAD
-=======
-
-      {/* Templates Add Modal */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
-      {templatesModalOpen && (
+      {panelOpen === 'templates' && (
         <ModalOverlay>
           <TemplatesModalContent ref={templatesModalRef}>
             <h3>Add New Template</h3>
@@ -365,7 +255,7 @@ const BoardPage = () => {
               onChange={(e) => setTemplateName(e.target.value)}
             />
             <div className="modal-buttons">
-              <button className="cancel-button" onClick={() => setTemplatesModalOpen(false)}>
+              <button className="cancel-button" onClick={() => setPanelOpen(null)}>
                 Cancel
               </button>
               <button className="primary-button" onClick={handleTemplateAdd}>
@@ -375,16 +265,11 @@ const BoardPage = () => {
           </TemplatesModalContent>
         </ModalOverlay>
       )}
-<<<<<<< HEAD
-=======
-
-      {/* Trash Slide Panel */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
-      {trashSlideOpen && (
+      {panelOpen === 'trash' && (
         <TrashSlidePanel ref={trashSlideRef}>
           <div className="panel-header">
             <h3>Deleted Items</h3>
-            <button className="close-button" onClick={() => setTrashSlideOpen(false)}><X size={20} /></button>
+            <button className="close-button" onClick={() => setPanelOpen(null)}><X size={20} /></button>
           </div>
           <div className="panel-content">
             {deletedFiles.length === 0 ? (
@@ -406,11 +291,6 @@ const BoardPage = () => {
           </div>
         </TrashSlidePanel>
       )}
-<<<<<<< HEAD
-=======
-
-      {/* Add Card Modal */}
->>>>>>> 062998cac2dc0098b912233a188b61cc2531dd1a
       {addCardModalOpen && (
         <ModalOverlay fullScreen>
           <ModalContent ref={addCardModalRef}>
