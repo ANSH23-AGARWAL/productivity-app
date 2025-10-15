@@ -13,6 +13,7 @@ const Wrapper = styled.div`
 
     /* Header */
     .header-bar {
+        justify-content: align-items: center;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -20,10 +21,10 @@ const Wrapper = styled.div`
         padding: 0.5rem 1.5rem;
         border-bottom: 1px solid #373b3e;
     }
-    .logo-img { height: 28px; object-fit: contain; }
+    .logo-img { height: 50px; object-fit: contain; }
     .header-middle {
         display: flex; align-items: center; gap: 0.5rem;
-        flex: 1; max-width: 500px; margin: 0 2rem;
+        flex: 2; max-width: 500px; margin: 0 2rem;
     }
     .search-box {
         display: flex; align-items: center;

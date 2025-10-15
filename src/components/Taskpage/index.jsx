@@ -1,210 +1,172 @@
-import React, { useState } from "react";
-import Wrapper from "./style";
+import React, { useState, useEffect } from "react";
+import { Wrapper } from "./style";
 import { 
-    FiX, FiChevronDown, FiVolume2, FiMoreHorizontal, FiLink, 
-    FiTag, FiCalendar, FiCheckSquare, FiUser, FiPaperclip, 
-    FiPlus, FiSquare, FiEdit2, FiSearch, FiMessageSquare,
-    FiEye, FiCopy, FiRepeat, FiShare2, FiArchive, FiUsers // Corrected: Added FiUsers here
+  FiTag, FiCalendar, FiCheckSquare, FiUser, FiPaperclip, FiPlus,
+   FiMessageSquare
 } from "react-icons/fi";
 
 const CardDetailPage = () => {
-    // State for managing UI components
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-    const [isLabelsOpen, setIsLabelsOpen] = useState(false);
-    const [isCoverOpen, setIsCoverOpen] = useState(false);
-    const [isVolumeModalOpen, setIsVolumeModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
+  const [description, setDescription] = useState("");
+  const [checklist, setChecklist] = useState([]);
+  const [newTask, setNewTask] = useState("");
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
 
-    // Dummy data for example
-    const lists = ["To Do", "In Progress", "Done"];
-    const labels = ["Green", "Yellow", "Orange", "Red", "Purple", "Blue"];
-    const images = [
-        "https://images.unsplash.com/photo-1518791841075-f8644555543c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHwxfHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1549722368-874e06263884?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHwzfHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1629854743431-10c08f656247?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHw1fHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1628178879612-421712a64b97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHw2fHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1628178879612-421712a64b97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHw2fHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080",
-        "https://images.unsplash.com/photo-1629854743431-10c08f656247?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MTgwMjZ8MHwxfHNlYXJjaHw1fHxjb3ZlciUyMGltYWdlfGVufDB8fHx8fDE2OTU5MjE4MDF8MA&ixlib=rb-4.0.3&q=80&w=1080"
-    ];
+  // 🔹 Load from localStorage
+  useEffect(() => {
+    setDescription(localStorage.getItem("description") || "");
+    setChecklist(JSON.parse(localStorage.getItem("checklist")) || []);
+    setComments(JSON.parse(localStorage.getItem("comments")) || []);
+  }, []);
 
-    const handleMenuClick = () => { setIsMenuOpen(!isMenuOpen); };
-    const handleAddClick = () => { setIsAddMenuOpen(!isAddMenuOpen); };
-    const handleLabelsClick = () => { setIsLabelsOpen(!isLabelsOpen); };
-    const handleCoverClick = () => { setIsCoverOpen(!isCoverOpen); };
-    const handleVolumeClick = () => { setIsVolumeModalOpen(!isVolumeModalOpen); };
+  // 🔹 Save to localStorage
+  useEffect(() => {
+    localStorage.setItem("description", description);
+    localStorage.setItem("checklist", JSON.stringify(checklist));
+    localStorage.setItem("comments", JSON.stringify(comments));
+  }, [description, checklist, comments]);
 
-    return (
-        <Wrapper>
-            <div className="card-detail-page">
-                {/* Header */}
-                <header className="card-header">
-                    <div className="list-selector">
-                        to do <FiChevronDown />
-                    </div>
-                    <div className="header-actions">
-                        <FiVolume2 onClick={handleVolumeClick} />
-                        <FiMoreHorizontal onClick={handleMenuClick} />
-                        <FiX />
-                    </div>
-                </header>
+  const toggleSection = (section) => {
+    setActiveSection(activeSection === section ? null : section);
+  };
 
-                {/* Main Content */}
-                <main className="card-main">
-                    {/* Left Section */}
-                    <div className="left-section">
-                        <div className="card-title">
-                            <h1>rahul</h1>
-                        </div>
-                        <div className="card-actions">
-                            <button className="add-button" onClick={handleAddClick}><FiPlus /> Add</button>
-                            <button><FiTag /> Labels</button>
-                            <button><FiCalendar /> Dates</button>
-                            <button><FiCheckSquare /> Checklist</button>
-                            <button><FiUser /> Members</button>
-                            <button onClick={handleCoverClick}><FiPaperclip /> Cover</button>
-                        </div>
-                        <div className="description-section">
-                            <h3>Description</h3>
-                            <textarea placeholder="Add a more detailed description..."></textarea>
-                        </div>
-                    </div>
-                    {/* Right Section */}
-                    <div className="right-section">
-                        <div className="activity-section">
-                            <div className="activity-header">
-                                <FiMessageSquare /> Comments and activity
-                                <button className="show-details-btn">Show details</button>
-                            </div>
-                            <textarea placeholder="Write a comment..."></textarea>
-                            <div className="comment-list">
-                                <div className="comment">
-                                    <span className="user-initials">RS</span>
-                                    <div className="comment-content">
-                                        <div className="comment-meta">
-                                            <b>rahul saini</b> added this card to to do
-                                        </div>
-                                        <p className="comment-date">
-                                            Sep 5, 2025, 11:43 PM
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+  const addTask = () => {
+    if (newTask.trim() !== "") {
+      setChecklist([...checklist, { text: newTask, done: false }]);
+      setNewTask("");
+    }
+  };
+
+  const toggleTask = (index) => {
+    const updated = [...checklist];
+    updated[index].done = !updated[index].done;
+    setChecklist(updated);
+  };
+
+  const addComment = () => {
+    if (comment.trim() !== "") {
+      const newComment = {
+        text: comment,
+        time: new Date().toLocaleString(),
+      };
+      setComments([...comments, newComment]);
+      setComment("");
+    }
+  };
+
+  return (
+    <Wrapper>
+      <div className="card-detail-page">
+        {/* Left Section */}
+        <div className="left-section">
+          <h1 className="card-title">rahul</h1>
+          <div className="button-group">
+            <button onClick={() => toggleSection("add")}><FiPlus /> Add</button>
+            <button onClick={() => toggleSection("labels")}><FiTag /> Labels</button>
+            <button onClick={() => toggleSection("dates")}><FiCalendar /> Dates</button>
+            <button onClick={() => toggleSection("checklist")}><FiCheckSquare /> Checklist</button>
+            <button onClick={() => toggleSection("members")}><FiUser /> Members</button>
+            <button onClick={() => toggleSection("cover")}><FiPaperclip /> Cover</button>
+          </div>
+
+          {activeSection === "add" && (
+            <div className="popup"><p>📋 Add new item to your card.</p></div>
+          )}
+
+          {activeSection === "labels" && (
+            <div className="popup labels">
+              <p>🏷️ Choose a label:</p>
+              <div className="label-palette">
+                <span className="green"></span>
+                <span className="blue"></span>
+                <span className="red"></span>
+                <span className="yellow"></span>
+              </div>
             </div>
+          )}
 
-            {/* Pop-ups & Modals */}
-            {isVolumeModalOpen && (
-                <div className="popup-modal">
-                    <div className="modal-header">
-                        <h3>Feedback</h3>
-                        <FiX className="close-icon" onClick={() => setIsVolumeModalOpen(false)} />
-                    </div>
-                    <div className="modal-options">
-                        <button>Share your thoughts on cards</button>
-                        <button>Ask the community</button>
-                    </div>
-                </div>
-            )}
-            
-            {isMenuOpen && (
-                <div className="popup-modal menu-modal">
-                    <div className="modal-header">
-                        <h3>Actions</h3>
-                        <FiX className="close-icon" onClick={() => setIsMenuOpen(false)} />
-                    </div>
-                    <div className="modal-options">
-                        <button><FiUsers /> Join</button>
-                        <button><FiRepeat /> Move</button>
-                        <button><FiCopy /> Copy</button>
-                        <button><FiSquare /> Mirror</button>
-                        <button><FiCheckSquare /> Make template</button>
-                        <button><FiEye /> Watch</button>
-                        <hr />
-                        <button><FiShare2 /> Share</button>
-                        <button><FiArchive /> Archive</button>
-                    </div>
-                </div>
-            )}
-            
-            {isAddMenuOpen && (
-                <div className="popup-modal add-modal">
-                    <div className="modal-header">
-                        <h3>Add to card</h3>
-                        <FiX className="close-icon" onClick={() => setIsAddMenuOpen(false)} />
-                    </div>
-                    <div className="modal-options">
-                        <button onClick={handleLabelsClick}><FiTag /> Labels</button>
-                        <button><FiCalendar /> Dates</button>
-                        <button><FiCheckSquare /> Checklist</button>
-                        <button><FiUser /> Members</button>
-                        <button><FiPaperclip /> Attachments</button>
-                        <button><FiPlus /> Custom Fields</button>
-                    </div>
-                </div>
-            )}
+          {activeSection === "dates" && (
+            <div className="popup"><input type="date" /></div>
+          )}
 
-            {isLabelsOpen && (
-                <div className="popup-modal labels-modal">
-                    <div className="modal-header">
-                        <h3>Labels</h3>
-                        <FiX className="close-icon" onClick={() => setIsLabelsOpen(false)} />
-                    </div>
-                    <div className="label-search">
-                        <FiSearch />
-                        <input type="text" placeholder="Search labels..." />
-                    </div>
-                    <div className="label-list">
-                        {labels.map(color => (
-                            <div className="label-option" key={color}>
-                                <FiSquare className={`label-color ${color.toLowerCase()}`} />
-                                <span className="label-text">{color}</span>
-                                <FiEdit2 className="edit-icon" />
-                            </div>
-                        ))}
-                    </div>
-                    <div className="modal-actions">
-                        <button className="create-label-btn">Create a new label</button>
-                        <button className="colorblind-btn">Enable colorblind friendly mode</button>
-                    </div>
-                </div>
-            )}
+          {activeSection === "checklist" && (
+            <div className="popup checklist">
+              <p>✅ Add Checklist</p>
+              <div className="task-add">
+                <input
+                  type="text"
+                  placeholder="Enter task..."
+                  value={newTask}
+                  onChange={(e) => setNewTask(e.target.value)}
+                />
+                <button onClick={addTask}>Add</button>
+              </div>
+              <ul>
+                {checklist.map((task, i) => (
+                  <li key={i}>
+                    <input
+                      type="checkbox"
+                      checked={task.done}
+                      onChange={() => toggleTask(i)}
+                    />
+                    <span className={task.done ? "done" : ""}>{task.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-            {isCoverOpen && (
-                <div className="popup-modal cover-modal">
-                    <div className="modal-header">
-                        <h3>Cover</h3>
-                        <FiX className="close-icon" onClick={() => setIsCoverOpen(false)} />
-                    </div>
-                    <div className="cover-options">
-                        <h4>Size</h4>
-                        <div className="size-options">
-                            <div className="size-preview small"></div>
-                            <div className="size-preview large"></div>
-                        </div>
-                        <h4>Colors</h4>
-                        <div className="color-palette">
-                            {["green", "yellow", "orange", "red", "purple", "blue", "teal", "pink", "gray"].map(color => (
-                                <div className={`color-box ${color}`} key={color}></div>
-                            ))}
-                        </div>
-                        <button className="colorblind-btn">Enable colorblind friendly mode</button>
-                        <hr />
-                        <h4>Attachments</h4>
-                        <button className="upload-btn">Upload a cover image</button>
-                        <p className="upload-tip">Tip: Drag an image on to the card to upload it.</p>
-                        <h4>Photos from Unsplash</h4>
-                        <div className="unsplash-photos">
-                            {images.map((img, index) => (
-                                <img src={img} alt={`unsplash-img-${index}`} key={index} />
-                            ))}
-                        </div>
-                    </div>
+          {activeSection === "members" && (
+            <div className="popup"><p>👥 Add team members.</p></div>
+          )}
+
+          {activeSection === "cover" && (
+            <div className="popup"><p>🖼️ Upload cover image.</p><input type="file" /></div>
+          )}
+
+          <div className="description-section">
+            <h3>Description</h3>
+            <textarea
+              placeholder="Add a more detailed description..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            ></textarea>
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="right-section">
+          <div className="activity-section">
+            <div className="activity-header">
+              <FiMessageSquare /> Comments and activity
+            </div>
+            <textarea
+              className="comment-input"
+              placeholder="Write a comment..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            <button onClick={addComment} className="comment-btn">Add Comment</button>
+            <div className="comment-list">
+              {comments.map((c, i) => (
+                <div className="comment" key={i}>
+                  <span className="user">rahul saini</span>
+                  <p>{c.text}</p>
+                  <span className="time">{c.time}</span>
                 </div>
-            )}
-        </Wrapper>
-    );
+              ))}
+              <div className="comment">
+                <span className="user">rahul saini</span>
+                <p>added this card to to do</p>
+                <span className="time">Sep 5, 2025, 11:43 PM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Wrapper>
+  );
 };
 
 export default CardDetailPage;

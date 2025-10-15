@@ -1,4 +1,3 @@
-// style.js
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 // Define theme colors using CSS variables
