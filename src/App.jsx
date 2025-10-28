@@ -13,10 +13,12 @@ import Taskpage from './components/Taskpage';
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
+
 const App = () => {
   return (
     <BrowserRouter>
     <Routes>
+      
       <Route path="/" element={<WelcomePage />} />
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/sign-up" element={<SignUp />} />
