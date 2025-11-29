@@ -1,7 +1,10 @@
+// style.js
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 // Define theme colors using CSS variables
 export const GlobalStyle = createGlobalStyle`
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
     :root {
       --light-bg: #F8F8F8;
       --light-header-bg: #FFFFFF;
@@ -36,18 +39,7 @@ export const GlobalStyle = createGlobalStyle`
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    [data-theme='light'] {
-      background-color: var(--light-bg);
-      color: var(--light-text-color);
-    }
-
-    [data-theme='dark'] {
-      background-color: var(--dark-bg);
-      color: var(--dark-text-color);
-    }
-
-    /* Universal hover effect */
-    button, .card-item, .left-box-button, .invite-member-button, .social-btn, .option-item {
+    button, .card-item, .left-box-button, .social-btn, .option-item {
       transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
       &:hover {
         transform: translateY(-2px);
@@ -64,8 +56,11 @@ export const AppWrapper = styled.div`
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: var(--bg);
     color: var(--text-color);
+    position: relative;
+    z-index: 0;
+    
+    background-color: var(--bg);
 
     [data-theme='light'] & {
       --bg: var(--light-bg);
@@ -97,7 +92,6 @@ export const AppWrapper = styled.div`
       --inset-shadow: var(--dark-inset-shadow);
     }
 `;
-
 export const Header = styled.header`
     background-color: var(--header-bg);
     color: var(--text-color);
@@ -107,7 +101,7 @@ export const Header = styled.header`
     align-items: center;
     box-shadow: 0 2px 10px var(--shadow);
     border-bottom: 1px solid var(--border-color);
-    height: 60px;
+    height: 40px;
     position: fixed;
     top: 0;
     left: 0;
@@ -150,11 +144,8 @@ export const Header = styled.header`
         box-shadow: 0 4px 10px var(--shadow);
       }
       &:active {
-        transform: translateY(0);
-        box-shadow: none;
-      }
-      svg {
-        color: inherit;
+        transform: translateY(1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
     }
 
@@ -228,34 +219,6 @@ export const LeftBox = styled.div`
       }
     }
 
-    .invite-member-button {
-      background-color: var(--accent-color);
-      color: #fff;
-      border: none;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-top: 0.5rem; 
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 10px var(--shadow);
-
-      &:hover {
-        background-color: #145cb3;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-      }
-      &:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      }
-    }
-
     @media (max-width: 768px) {
       width: 100%;
       box-shadow: none;
@@ -279,11 +242,6 @@ export const LeftBox = styled.div`
           height: 18px;
         }
       }
-      .invite-member-button {
-        margin-top: 0;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-      }
     }
 `;
 
@@ -295,10 +253,11 @@ export const ContentArea = styled.div`
     padding-right: 2rem;
     padding-bottom: 2rem;
     flex-grow: 1;
+    z-index: 1;
+    background-color: transparent;
 
-    /* This shrinks the main content when a right panel is open */
     ${(props) =>
-      (props.inboxOpen || props.profileOpen) &&
+      props.panelOpen &&
       css`
         padding-right: 340px;
         transition: padding-right 0.3s ease-out;
@@ -307,7 +266,7 @@ export const ContentArea = styled.div`
     .main-content {
       min-height: calc(100vh - 60px - 4rem);
     }
-
+    
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -390,43 +349,6 @@ export const ContentArea = styled.div`
           background-color: rgba(255, 77, 77, 0.1);
         }
       }
-
-      &:before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: conic-gradient(
-          from 0deg,
-          transparent 0%,
-          transparent 10%,
-          rgba(0, 255, 208, 0.5) 15%,
-          rgba(0, 255, 208, 0.5) 20%,
-          transparent 25%,
-          transparent 100%
-        );
-        border-radius: 12px;
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.5s ease, transform 0.5s ease;
-        animation: rotateGlow 8s linear infinite;
-      }
-
-      &:hover:before {
-        opacity: 1;
-        transform: rotate(360deg);
-      }
-
-      @keyframes rotateGlow {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
     }
 
     .recent-viewed-section,
@@ -435,12 +357,57 @@ export const ContentArea = styled.div`
       margin-bottom: 2rem;
 
       h2 {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
+        font-family: 'Poppins', sans-serif;
         color: var(--text-color);
         margin-bottom: 1.5rem;
         border-bottom: 2px solid var(--border-color);
         padding-bottom: 0.5rem;
       }
+    }
+
+    /* Added styles for recent boards and upcoming deadlines lists */
+    .recent-boards-list, .deadlines-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .recent-board-item, .deadline-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      background-color: var(--button-bg);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .recent-board-item:hover, .deadline-item:hover {
+      background-color: var(--button-hover-bg);
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+
+    .recent-boards-placeholder, .deadlines-placeholder {
+      padding: 1rem;
+      color: var(--secondary-text-color);
+      background-color: transparent;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: var(--secondary-text-color);
+      margin-top: 4px;
+      font-weight: 400;
     }
 `;
 
@@ -491,20 +458,19 @@ export const RightPanel = styled.div`
     transition: transform 0.3s ease-out;
     display: flex;
     flex-direction: column;
-    padding-top: 60px; /* **Change:** Added padding to push content down */
-
+    padding-top: 60px;
     .panel-header {
       padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: absolute; /* **Change:** Positioning header absolutely */
+      position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      background: var(--header-bg); /* **Change:** Ensure header has a background */
-      z-index: 1; /* **Change:** Make sure it's above other content */
+      background: var(--header-bg);
+      z-index: 1;
       h3 {
         margin: 0;
         font-size: 1.5rem;
@@ -534,7 +500,7 @@ export const RightPanel = styled.div`
       align-items: center;
       justify-content: center;
       text-align: center;
-      margin-top: 0; /* **Removed:** No longer needed with new header positioning */
+      margin-top: 0;
 
       .empty-state {
         display: flex;
@@ -661,10 +627,10 @@ export const ModalOverlay = styled.div`
 export const ModalContent = styled.div`
     background-color: var(--card-bg);
     color: var(--text-color);
-    padding: 2.5rem;
+    padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 8px 30px var(--shadow);
-    width: 450px;
+    width: 350px;
     max-width: 90%;
     animation: fadeInScale 0.3s ease-out;
 
@@ -681,8 +647,8 @@ export const ModalContent = styled.div`
 
     h3 {
       margin-top: 0;
-      margin-bottom: 1.5rem;
-      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
       text-align: center;
       color: var(--text-color);
     }
@@ -691,15 +657,16 @@ export const ModalContent = styled.div`
     textarea,
     .date-picker,
     select {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      margin-bottom: 1rem;
+      width: calc(100% - 1.6rem); /* Adjusting width to account for padding */
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.8rem;
       border: 1px solid var(--border-color);
       border-radius: 8px;
       background-color: var(--button-bg);
       color: var(--text-color);
-      font-size: 1rem;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
+      box-sizing: border-box; /* To ensure padding is included in the width */
 
       &:focus {
         outline: none;
@@ -710,15 +677,15 @@ export const ModalContent = styled.div`
 
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 70px;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.85rem;
         color: var(--secondary-text-color);
       }
     }
@@ -726,15 +693,15 @@ export const ModalContent = styled.div`
     .modal-buttons {
       display: flex;
       justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 1.5rem;
+      gap: 0.8rem;
+      margin-top: 1.2rem;
 
       button {
-        padding: 0.8rem 1.5rem;
+        padding: 0.7rem 1.2rem;
         border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 0.9rem;
         transition: all 0.2s ease;
       }
 
@@ -762,7 +729,7 @@ export const ModalContent = styled.div`
 `;
 
 export const TemplatesModalContent = styled(ModalContent)`
-    width: 400px;
+    width: 350px;
     h3 {
       color: var(--accent-color);
     }
