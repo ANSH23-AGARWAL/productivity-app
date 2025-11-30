@@ -12,6 +12,7 @@ import Taskpage from './components/Taskpage';
 import ManageAccount from './components/ManageAccount';
 import HelpPage from './components/HelpPage';
 import SwitchAccount from './components/SwitchAccount';
+import Collaborators from './components/Collaborators';
 
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -34,6 +35,7 @@ const App = () => {
   <Route path="/manage" element={<ManageAccount />} />
   <Route path="/help" element={<HelpPage />} />
   <Route path="/switch" element={<SwitchAccount />} />
+  <Route path="/coll" element={<Collaborators />} />
     </Routes>  
     </BrowserRouter> 
       
