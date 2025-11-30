@@ -9,16 +9,18 @@ import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
 import BoardPage from './components/BoardPage';
 import Taskpage from './components/Taskpage';
+import ManageAccount from './components/ManageAccount';
+import HelpPage from './components/HelpPage';
+import SwitchAccount from './components/SwitchAccount';
+import Collaborators from './components/Collaborators';
 
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
 
 const App = () => {
   return (
     <BrowserRouter>
     <Routes>
-      
       <Route path="/" element={<WelcomePage />} />
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/sign-up" element={<SignUp />} />
@@ -30,6 +32,10 @@ const App = () => {
   <Route path="/board" element={<BoardPage />} />
   <Route path="/dash" element={<Dashboard />} />
   <Route path="/task" element={<Taskpage />} />
+  <Route path="/manage" element={<ManageAccount />} />
+  <Route path="/help" element={<HelpPage />} />
+  <Route path="/switch" element={<SwitchAccount />} />
+  <Route path="/coll" element={<Collaborators />} />
     </Routes>  
     </BrowserRouter> 
       

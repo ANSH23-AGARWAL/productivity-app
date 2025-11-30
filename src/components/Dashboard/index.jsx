@@ -1,8 +1,9 @@
+// index.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import toast, { Toaster } from 'react-hot-toast';
+
 import {
   Bell,
   UserCircle,
@@ -47,8 +48,10 @@ const BoardPage = () => {
   const [cards, setCards] = useState([]);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [templateName, setTemplateName] = useState('');
+  const [recentViewed, setRecentViewed] = useState([]);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState([]);
 
-  const navigate = useNavigate();
+
 
   const inboxRef = useRef(null);
   const profileRef = useRef(null);
@@ -81,6 +84,22 @@ const BoardPage = () => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  
+  useEffect(() => {
+    const today = new Date();
+  
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const upcoming = cards.filter(card => {
+  
+      const due = new Date(card.dueDate);
+      const dueStart = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+      const diffMs = dueStart - startOfToday;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 3;
+    });
+    setUpcomingDeadlines(upcoming);
+  }, [cards]);
+
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     toast.success(`${theme === 'light' ? 'Dark' : 'Light'} mode activated!`);
@@ -95,12 +114,18 @@ const BoardPage = () => {
       id: Date.now(),
       title: cardTitle,
       description: cardDescription,
-      dueDate: cardDueDate.toDateString(),
+      dueDate: cardDueDate, 
       member: cardMember,
       priority: cardPriority,
       lastUpdated: new Date().toLocaleString(),
     };
     setCards((prevCards) => [...prevCards, newCard]);
+    setRecentViewed((prev) => {
+      const filtered = prev.filter(c => c.id !== newCard.id);
+      const updated = [newCard, ...filtered];
+      return updated.slice(0, 5);
+    });
+
     toast.success('Card added successfully!');
     setAddCardModalOpen(false);
     setCardTitle('');
@@ -125,6 +150,7 @@ const BoardPage = () => {
     if (cardToDelete) {
       setDeletedFiles(prev => [...prev, cardToDelete]);
       setCards(prev => prev.filter(card => card.id !== id));
+      setRecentViewed(prev => prev.filter(c => c.id !== id));
       toast.success('Card moved to trash!');
     }
   };
@@ -165,7 +191,7 @@ const BoardPage = () => {
                   <h3>{card.title}</h3>
                   <p>{card.description}</p>
                   <div className="card-details">
-                    <span>Due: {card.dueDate}</span>
+                    <span>Due: {new Date(card.dueDate).toDateString()}</span>
                     <span>Member: {card.member || 'N/A'}</span>
                     <span>
                       Priority: <span className={`priority-${card.priority.toLowerCase()}`}>{card.priority}</span>
@@ -178,14 +204,46 @@ const BoardPage = () => {
             </div>
             <div className="recent-viewed-section">
               <h2>Recent Viewed Boards</h2>
-              <div className="recent-boards-placeholder">
-                <p>No recent boards to display.</p>
+              <div className="recent-boards-list">
+                {recentViewed.length > 0 ? (
+                  recentViewed.map((board) => (
+                    <div key={board.id} className="recent-board-item">
+                      <div>
+                        <strong>{board.title}</strong>
+                        <div className="small">{board.description ? `${board.description}` : ''}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <small>Due: {new Date(board.dueDate).toDateString()}</small>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="recent-boards-placeholder">
+                    <p>No recent boards to display.</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="upcoming-deadlines-section">
               <h2>Upcoming Deadlines</h2>
-              <div className="deadlines-placeholder">
-                <p>No upcoming deadlines.</p>
+              <div className="deadlines-list">
+                {upcomingDeadlines.length > 0 ? (
+                  upcomingDeadlines.map((card) => (
+                    <div key={card.id} className="deadline-item">
+                      <div>
+                        <strong>{card.title}</strong>
+                        <div className="small">{card.description ? `${card.description}` : ''}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <small>Due: {new Date(card.dueDate).toDateString()}</small>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="deadlines-placeholder">
+                    <p>No upcoming deadlines.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

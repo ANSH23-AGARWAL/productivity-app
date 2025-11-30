@@ -1,3 +1,4 @@
+// style.js
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 // Define theme colors using CSS variables
@@ -363,6 +364,50 @@ export const ContentArea = styled.div`
         border-bottom: 2px solid var(--border-color);
         padding-bottom: 0.5rem;
       }
+    }
+
+    /* Added styles for recent boards and upcoming deadlines lists */
+    .recent-boards-list, .deadlines-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .recent-board-item, .deadline-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      background-color: var(--button-bg);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text-color);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .recent-board-item:hover, .deadline-item:hover {
+      background-color: var(--button-hover-bg);
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+
+    .recent-boards-placeholder, .deadlines-placeholder {
+      padding: 1rem;
+      color: var(--secondary-text-color);
+      background-color: transparent;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: var(--secondary-text-color);
+      margin-top: 4px;
+      font-weight: 400;
     }
 `;
 
