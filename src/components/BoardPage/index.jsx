@@ -77,6 +77,9 @@ const BoardPage = () => {
 
     const togglePlanner = () => {
         setIsPlannerOpen(!isPlannerOpen);
+        if (!isPlannerOpen) {
+            setIsInboxOpen(false); // Close inbox when opening planner
+        }
     };
 
     const toggleSwitchBoards = () => {
@@ -157,7 +160,7 @@ const BoardPage = () => {
                 {/* Main Content */}
                 <main className="main-content">
                     {/* Inbox Sidebar (Conditionally rendered) */}
-                    {isInboxOpen && (
+                    {isInboxOpen && !isPlannerOpen && (
                         <aside className="sidebar">
                             <div className="inbox-header">
                                 <FiInbox className="inbox-icon" />
@@ -174,30 +177,154 @@ const BoardPage = () => {
                         </aside>
                     )}
 
-                    {/* Board Area */}
-                    <section className="board-area">
-                        <div className="board-lists">
-                            {lists.map(list => (
-                                <div key={list.id} className="list-column">
-                                    <div className="list-header">
-                                        <h4>{list.title}</h4>
-                                        <FiMoreVertical className="list-menu" />
+                    {/* Planner Sidebar (Conditionally rendered) */}
+                    {isPlannerOpen && (
+                        <aside className="sidebar planner-sidebar-main">
+                            <div className="planner-header-main">
+                                <FiCalendar className="inbox-icon" />
+                                <h3>Planner</h3>
+                            </div>
+                            <div className="planner-view-selector">
+                                <button className="view-btn active">Day</button>
+                                <button className="view-btn">Week</button>
+                                <button className="view-btn">Month</button>
+                            </div>
+                            <div className="planner-date-display">{formattedDate}</div>
+                            <div className="planner-tasks">
+                                <p className="planner-info">📅 Add dates to your cards to see them here</p>
+                                <div className="planner-hint">
+                                    <p><strong>How to use Planner:</strong></p>
+                                    <p>1️⃣ Click any card and set a due date</p>
+                                    <p>2️⃣ Cards with dates appear here automatically</p>
+                                    <p>3️⃣ Drag & drop to reschedule tasks</p>
+                                </div>
+                            </div>
+                        </aside>
+                    )}
+
+                    {/* Board Area / Calendar View */}
+                    {!isPlannerOpen ? (
+                        <section className="board-area">
+                            <div className="board-lists">
+                                {lists.map(list => (
+                                    <div key={list.id} className="list-column">
+                                        <div className="list-header">
+                                            <h4>{list.title}</h4>
+                                            <FiMoreVertical className="list-menu" />
+                                        </div>
+                                        <div className="list-cards">
+                                            {list.cards.map((card, i) => (
+                                                <div key={i} className="card">{card}</div>
+                                            ))}
+                                        </div>
+                                        <button className="add-card-btn dark" onClick={() => addCardToList(list.id)}>
+                                            <FiPlus /> Add a card
+                                        </button>
                                     </div>
-                                    <div className="list-cards">
-                                        {list.cards.map((card, i) => (
-                                            <div key={i} className="card">{card}</div>
+                                ))}
+                                <button className="add-list-btn" onClick={addNewList}>
+                                    <FiPlus /> Add another list
+                                </button>
+                            </div>
+                        </section>
+                    ) : (
+                        <section className="calendar-view">
+                            <div className="calendar-header">
+                                <button className="calendar-nav-btn">‹</button>
+                                <h2 className="calendar-month">Dec 2025</h2>
+                                <button className="calendar-nav-btn">›</button>
+                                <button className="today-btn">Today</button>
+                            </div>
+                            <div className="week-calendar-body">
+                                <div className="week-header">
+                                    <div className="time-column-header"></div>
+                                    <div className="day-header">
+                                        <div className="day-label">Sun</div>
+                                        <div className="day-number">30</div>
+                                    </div>
+                                    <div className="day-header active">
+                                        <div className="day-label">Mon</div>
+                                        <div className="day-number">1</div>
+                                    </div>
+                                    <div className="day-header">
+                                        <div className="day-label">Tue</div>
+                                        <div className="day-number">2</div>
+                                    </div>
+                                    <div className="day-header">
+                                        <div className="day-label">Wed</div>
+                                        <div className="day-number">3</div>
+                                    </div>
+                                    <div className="day-header">
+                                        <div className="day-label">Thu</div>
+                                        <div className="day-number">4</div>
+                                    </div>
+                                    <div className="day-header">
+                                        <div className="day-label">Fri</div>
+                                        <div className="day-number">5</div>
+                                    </div>
+                                    <div className="day-header">
+                                        <div className="day-label">Sat</div>
+                                        <div className="day-number">6</div>
+                                    </div>
+                                </div>
+                                <div className="week-grid-container">
+                                    <div className="time-column">
+                                        <div className="all-day-label">All day</div>
+                                        {['12 am', '1 am', '2 am', '3 am', '4 am', '5 am', '6 am', '7 am', '8 am', '9 am', '10 am', '11 am', '12 pm', '1 pm', '2 pm', '3 pm', '4 pm', '5 pm', '6 pm', '7 pm', '8 pm', '9 pm', '10 pm', '11 pm'].map((time, idx) => (
+                                            <div key={idx} className="time-label-week">{time}</div>
                                         ))}
                                     </div>
-                                    <button className="add-card-btn dark" onClick={() => addCardToList(list.id)}>
-                                        <FiPlus /> Add a card
-                                    </button>
+                                    <div className="week-days-grid">
+                                        {[0, 1, 2, 3, 4, 5, 6].map((day) => (
+                                            <div key={day} className="day-column">
+                                                <div className="all-day-cell"></div>
+                                                {Array(24).fill(0).map((_, hour) => (
+                                                    <div key={hour} className="hour-cell">
+                                                        {day === 1 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                        {day === 2 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                        {day === 3 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                        {day === 4 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                        {day === 5 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                        {day === 6 && hour === 0 && (
+                                                            <div className="event-card-week">
+                                                                <div className="event-title-week">Intern Call</div>
+                                                                <div className="event-time-week">11:00pm - 1:00am</div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            ))}
-                            <button className="add-list-btn" onClick={addNewList}>
-                                <FiPlus /> Add another list
-                            </button>
-                        </div>
-                    </section>
+                            </div>
+                        </section>
+                    )}
                 </main>
 
                 {/* Footer Navigation */}
@@ -325,27 +452,7 @@ const BoardPage = () => {
                 </div>
             )}
 
-            {isPlannerOpen && (
-                <div className="planner-sidebar">
-                    <div className="planner-header">
-                        <FiCalendar />
-                        <h3>Planner</h3>
-                        <FiX className="close-icon" onClick={() => setIsPlannerOpen(false)} />
-                    </div>
-                    <div className="planner-content">
-                        <p className="planner-date">{formattedDate}</p>
-                        <div className="calendar-placeholder">
-                           <p>Calendar component would go here...</p>
-                        </div>
-                        <div className="hourly-tracker">
-                           <h4>Hourly Tracker</h4>
-                           <div className="hour-slot">9:00 AM - 10:00 AM: Meeting</div>
-                           <div className="hour-slot">10:00 AM - 11:00 AM: Coding</div>
-                           <div className="add-task-btn">+ Add a task</div>
-                        </div>
-                    </div>
-                </div>
-            )}
+
 
             {isSwitchBoardsModalOpen && (
                 <div className="modal-overlay">
