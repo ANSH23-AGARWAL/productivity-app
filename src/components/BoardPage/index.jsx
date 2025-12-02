@@ -118,7 +118,7 @@ const BoardPage = () => {
                 {/* Header */}
                 <header className="header-bar">
                     <div className="header-left">
-                        <img src="/Trello-logo.png" alt="Trello Logo" className="logo-img" />
+                        <img src="/BoardWise-logo.png" alt="BoardWise logo" className="logo-img" />
                     </div>
                     <div className="header-middle">
                         <div className="search-box">

@@ -22,40 +22,94 @@ const Wrapper = styled.div`
     }
     .logo-img { height: 28px; object-fit: contain; }
     .header-middle {
-        display: flex; align-items: center; gap: 0.5rem;
-        flex: 1; max-width: 500px; margin: 0 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        max-width: 620px;
+        margin: 0 2rem;
     }
     .search-box {
-        display: flex; align-items: center;
-        background-color: #373b3e; padding: 0.5rem 0.8rem;
-        border-radius: 3px; flex: 1;
+        display: flex;
+        align-items: center;
+        flex: 1;
+        background-color: #14161c;
+        border: 1px solid #32343c;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .search-icon { margin-right: 0.5rem; color: #a1b0c0; font-size: 16px; }
+    .search-box:focus-within {
+        border-color: #6ea4ff;
+        box-shadow: 0 0 0 1px rgba(110, 164, 255, 0.4);
+    }
+    .search-icon {
+        margin-right: 0.5rem;
+        color: #7e8495;
+        font-size: 1rem;
+    }
     .search-input {
-        flex: 1; border: none; outline: none;
-        background-color: transparent; color: #e3e6e8; font-size: 0.9rem;
+        flex: 1;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: #f3f4f6;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+    }
+    .search-input::placeholder {
+        color: #7f8698;
     }
     .create-btn {
-        background-color: #3b82f6; color: white; border: none;
-        padding: 0.5rem 1rem; border-radius: 3px;
-        font-size: 0.9rem; font-weight: 500;
-        display: flex; align-items: center; gap: 0.3rem;
-        cursor: pointer; white-space: nowrap;
-        transition: background-color 0.2s;
+        background: linear-gradient(180deg, #7ab2ff, #5e96f5);
+        color: #0d1424;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.55rem 1.4rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .create-btn:hover { background-color: #2563eb; }
-    .header-right { display: flex; gap: 1rem; position: relative; }
+    .create-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    }
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        position: relative;
+        padding: 0.1rem 0.4rem;
+        background: transparent;
+    }
     .avatar, .avatar-secondary {
-        background-color: #f59e0b; border-radius: 50%; color: #fff; font-weight: 600;
+        background-color: #00a3cf; border-radius: 50%; color: #0d1424; font-weight: 600;
         display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .avatar { width: 32px; height: 32px; font-size: 0.8rem; }
+    .avatar { width: 30px; height: 30px; font-size: 0.78rem; }
     .avatar-secondary { width: 28px; height: 28px; font-size: 0.7rem; }
     .icon, .action-icon {
-        color: #e3e6e8;
+        color: #cdd3e1;
         cursor: pointer;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         transition: color 0.2s;
+    }
+    .header-right .icon {
+        font-size: 1.1rem;
+    }
+    .header-right .icon-wrapper {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .icon:hover, .action-icon:hover { color: #f1f5f9; }
     .header-actions .action-icon {
@@ -326,7 +380,7 @@ const Wrapper = styled.div`
         background: transparent;
         backdrop-filter: blur(10px);
         border-top: none;
-        padding: 0.8rem;
+        padding: 0.55rem 0.65rem;
         position: fixed;
         bottom: 20px;
         left: 50%;
@@ -348,15 +402,15 @@ const Wrapper = styled.div`
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.6rem;
-        padding: 0.7rem 1.6rem;
+        gap: 0.3rem;
+        padding: 0.45rem 0.95rem;
         cursor: pointer;
         color: #94a3b8;
         transition: all 0.2s;
         border-bottom: none;
-        border-radius: 14px;
+        border-radius: 10px;
         position: relative;
-        margin: 0 0.15rem;
+        margin: 0 0.1rem;
     }
     .nav-item:hover { 
         color: #f1f5f9;
@@ -377,8 +431,8 @@ const Wrapper = styled.div`
         background: #5b9aff;
         border-radius: 2px;
     }
-    .nav-icon { font-size: 1.2rem; }
-    .nav-item span { font-size: 0.85rem; font-weight: 500; }
+    .nav-icon { font-size: 1rem; }
+    .nav-item span { font-size: 0.78rem; font-weight: 500; }
 
     /* Modals & Pop-ups */
     .modal-overlay {
