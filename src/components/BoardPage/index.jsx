@@ -9,12 +9,12 @@ import {
 
 const BoardPage = () => {
     const [lists, setLists] = useState([
-        { id: 1, title: "To Do", cards: [] },
-        { id: 2, title: "In Progress", cards: [] },
-        { id: 3, title: "Done", cards: [] }
+        { id: 1, title: "Today Task", cards: [] }
     ]);
     const [inboxCards, setInboxCards] = useState([]);
     const [isStarred, setIsStarred] = useState(false);
+    const [boardName, setBoardName] = useState("My Trello board");
+    const [isEditingBoardName, setIsEditingBoardName] = useState(false);
 
     const [isInboxOpen, setIsInboxOpen] = useState(true);
     const [isPlannerOpen, setIsPlannerOpen] = useState(false);
@@ -109,6 +109,30 @@ const BoardPage = () => {
         }
     };
 
+    const handleBoardNameClick = () => {
+        setIsEditingBoardName(true);
+    };
+
+    const handleBoardNameChange = (e) => {
+        setBoardName(e.target.value);
+    };
+
+    const handleBoardNameBlur = () => {
+        setIsEditingBoardName(false);
+        if (boardName.trim() === '') {
+            setBoardName('My Trello board');
+        }
+    };
+
+    const handleBoardNameKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setIsEditingBoardName(false);
+            if (boardName.trim() === '') {
+                setBoardName('My Trello board');
+            }
+        }
+    };
+
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
@@ -141,26 +165,11 @@ const BoardPage = () => {
                     </div>
                 </header>
 
-                {/* Second Header */}
-                <div className="header-row-2">
-                    <div className="team-selector">
-                        <span>Team</span>
-                        <div className="avatar-secondary" onClick={() => alert("Edit profile option goes here.")}>JY</div>
-                    </div>
-                    <div className="header-actions">
-                        <FiStar className={`action-icon ${isStarred ? "starred" : ""}`} onClick={handleStarClick} />
-                        <FiUsers className="action-icon" onClick={handleUsersClick} />
-                        <button className="share-btn" onClick={handleShareClick}><FiShare2 /> Share</button>
-                        <div className="menu-button" onClick={handleMenuClick}>
-                            <FiMoreVertical className="action-icon" />
-                        </div>
-                    </div>
-                </div>
-
                 {/* Main Content */}
                 <main className="main-content">
-                    {/* Inbox Sidebar (Conditionally rendered) */}
-                    {isInboxOpen && !isPlannerOpen && (
+                    <div className="content-wrapper">
+                        {/* Inbox Sidebar (Conditionally rendered) */}
+                        {isInboxOpen && !isPlannerOpen && (
                         <aside className="sidebar">
                             <div className="inbox-header">
                                 <FiInbox className="inbox-icon" />
@@ -174,11 +183,11 @@ const BoardPage = () => {
                             <button className="add-card-btn dark" onClick={addCardToInbox}>
                                 <FiPlus /> Add a card
                             </button>
-                        </aside>
-                    )}
+                            </aside>
+                        )}
 
-                    {/* Planner Sidebar (Conditionally rendered) */}
-                    {isPlannerOpen && (
+                        {/* Planner Sidebar (Conditionally rendered) */}
+                        {isPlannerOpen && (
                         <aside className="sidebar planner-sidebar-main">
                             <div className="planner-header-main">
                                 <FiCalendar className="inbox-icon" />
@@ -205,6 +214,33 @@ const BoardPage = () => {
                     {/* Board Area / Calendar View */}
                     {!isPlannerOpen ? (
                         <section className="board-area">
+                            {/* Board Title Header */}
+                            <div className="header-row-2">
+                                <div className="team-selector">
+                                    {isEditingBoardName ? (
+                                        <input
+                                            type="text"
+                                            value={boardName}
+                                            onChange={handleBoardNameChange}
+                                            onBlur={handleBoardNameBlur}
+                                            onKeyPress={handleBoardNameKeyPress}
+                                            autoFocus
+                                            className="board-name-input"
+                                        />
+                                    ) : (
+                                        <span onClick={handleBoardNameClick} style={{cursor: 'pointer'}}>{boardName}</span>
+                                    )}
+                                    <div className="avatar-secondary" onClick={() => alert("Edit profile option goes here.")}>JY</div>
+                                </div>
+                                <div className="header-actions">
+                                    <FiStar className={`action-icon ${isStarred ? "starred" : ""}`} onClick={handleStarClick} />
+                                    <FiUsers className="action-icon" onClick={handleUsersClick} />
+                                    <button className="share-btn" onClick={handleShareClick}><FiShare2 /> Share</button>
+                                    <div className="menu-button" onClick={handleMenuClick}>
+                                        <FiMoreVertical className="action-icon" />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="board-lists">
                                 {lists.map(list => (
                                     <div key={list.id} className="list-column">
@@ -325,6 +361,7 @@ const BoardPage = () => {
                             </div>
                         </section>
                     )}
+                    </div>
                 </main>
 
                 {/* Footer Navigation */}

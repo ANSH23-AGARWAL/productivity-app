@@ -5,7 +5,7 @@ const Wrapper = styled.div`
         display: flex;
         flex-direction: column;
         height: 100vh;
-        background-color: #0b1623;
+        background-color: #1d2125;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
         color: #fff;
         overflow: hidden;
@@ -116,14 +116,23 @@ const Wrapper = styled.div`
         color: #e3e6e8;
     }
 
-    /* Second Header */
+    /* Second Header - Now inside board-area */
     .header-row-2 {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background-color: #212529;
-        padding: 0.6rem 1.5rem;
-        border-bottom: 1px solid #373b3e;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 1rem 0.75rem;
+        border: none;
+        margin-bottom: 0.75rem;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+    }
+    .content-wrapper {
+        display: flex;
+        flex: 1;
+        gap: 1.5rem;
+        overflow: hidden;
     }
     .team-selector {
         display: flex;
@@ -133,10 +142,26 @@ const Wrapper = styled.div`
         font-weight: bold;
         font-size: 1.1rem;
     }
+    .board-name-input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #5b9aff;
+        border-radius: 4px;
+        padding: 0.4rem 0.6rem;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: bold;
+        font-family: inherit;
+        outline: none;
+        min-width: 200px;
+    }
+    .board-name-input:focus {
+        background: rgba(255, 255, 255, 0.15);
+    }
     .header-actions {
         display: flex;
         gap: 1rem;
         position: relative;
+        align-items: center;
     }
     .share-btn {
         background-color: #3b82f6;
@@ -167,26 +192,19 @@ const Wrapper = styled.div`
     /* Main Layout */
     .main-content {
         display: flex;
+        flex-direction: column;
         flex: 1;
-        overflow: hidden;
-        background: linear-gradient(135deg, #5a4a9c 0%, #9e4a8f 100%);
+        overflow: visible;
+        background: #1d2125;
         transition: padding-left 0.3s ease-in-out;
         position: relative;
         z-index: 1;
-    }
-    .main-content::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.15);
-        z-index: 2;
+        padding: 1.5rem;
+        gap: 1rem;
     }
     .sidebar {
         flex: 0 0 240px;
-        background: #172b4d;
+        background: rgba(17, 25, 40, 0.68);
         padding: 1rem;
         display: flex;
         flex-direction: column;
@@ -195,9 +213,17 @@ const Wrapper = styled.div`
         position: relative;
         z-index: 3;
         color: white;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
     }
     .planner-sidebar-main {
-        background: #1a1f2e;
+        background: rgba(17, 25, 40, 0.68);
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
     }
     .planner-header-main {
         display: flex;
@@ -270,17 +296,24 @@ const Wrapper = styled.div`
     /* Board Area */
     .board-area {
         flex: 1;
-        padding: 0.75rem 1rem;
+        padding: 0.75rem 1.25rem 1.25rem 1.25rem;
         overflow-x: auto;
         white-space: nowrap;
         position: relative;
         z-index: 3;
+        background: rgba(17, 25, 40, 0.68);
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(18px);
+        display: flex;
+        flex-direction: column;
     }
     .board-lists {
         display: flex;
         gap: 0.75rem;
         align-items: flex-start;
-        height: 100%;
+        flex: 1;
         padding: 0.5rem 0;
     }
     .list-column {
