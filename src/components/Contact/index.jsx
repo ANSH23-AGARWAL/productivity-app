@@ -1,10 +1,17 @@
 import React from 'react';
 import Wrapper from './style';
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 
 const Contact = () => {
+  const navigate = useNavigate();
+
   return (
     <Wrapper>
-      <div className="contact-bg">
+      <div className="contact-bg" style={{ position: 'relative' }}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <FiArrowLeft /> Back
+        </button>
         <div className="contact-container">
           <h1 className="contact-heading-gradient">Get in Touch</h1>
           <div className="contact-content">
@@ -40,7 +47,7 @@ const Contact = () => {
               <label>Message
                 <textarea name="message" rows={4} placeholder="Your Message" required />
               </label>
-              <button  type="submit">Send Message</button>
+              <button type="submit">Send Message</button>
             </form>
           </div>
         </div>
