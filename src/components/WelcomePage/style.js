@@ -11,7 +11,7 @@ const Wrapper = styled.div`
     width: 100vw;
   .welcome-left {
     flex: 1;
-    background: #f5f4f1;
+    background: #0A0F1F;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,7 +24,7 @@ const Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f4f1;
+    background: #0A0F1F;
     min-width: 0;
     min-height: 100vh;
     width: 50vw;
@@ -40,7 +40,7 @@ const Wrapper = styled.div`
   .logo-label {
     margin-top: 10px;
     font-size: 1rem;
-    color: #1a3557;
+    color: #4452FE;
     font-family: 'Segoe UI', sans-serif;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -72,21 +72,21 @@ const Wrapper = styled.div`
 
   .welcome-left h1 {
     font-size: 2.8rem;
-    color: #1a3557;
+    color: #ffffff;
     margin-bottom: 10px;
     font-family: 'Segoe UI', sans-serif;
     font-weight: 700;
   }
   .tagline {
     font-size: 1.3rem;
-    color: #6bb3a6;
+    color: #2FAFCC;
     font-style: italic;
     font-family: 'Georgia', serif;
     margin-bottom: 0;
   }
   .welcome-right {
     flex: 1;
-    background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
+    background: #0A0F1F;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -155,7 +155,7 @@ const Wrapper = styled.div`
   font-size: 1.2rem;
   font-weight: 700;
   color: #fff;
-  background: rgba(21, 48, 91, 0.85);
+  background: rgba(10, 15, 31, 0.85);
   backdrop-filter: blur(16px);
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
@@ -185,7 +185,7 @@ const Wrapper = styled.div`
 .header-bar .nav-link:hover,
 .header-bar .auth-btn:hover {
   background: rgba(255, 255, 255, 0.08); /* subtle color change */
-  color: #00ffd0; /* text color change */
+  color: #4452FE; /* text color change */
   transform: translateY(-2px); /* slight lift */
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* soft shadow */
@@ -233,11 +233,15 @@ const Wrapper = styled.div`
   font-weight: 800;
   background: linear-gradient(
     270deg,
-    #00ffd0,
-    #00bfff,
-    #a259e6,
-    #ffe066,
-    #ff7e5f
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
+    #4452FE,
+    #2FAFCC,
+    #9B5CFF,
+    #4452FE
+  );
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -246,7 +250,7 @@ const Wrapper = styled.div`
   letter-spacing: 1px;
   margin-bottom: 18px;
   text-align: left;
-  text-shadow: 0 0 15px rgba(0, 255, 208, 0.3);
+  text-shadow: 0 0 15px rgba(68, 82, 254, 0.3);
 }
 
   @keyframes gradientFlow {
