@@ -4,7 +4,7 @@ import {
     FiSearch, FiPlus, FiVolume2, FiBell, FiHelpCircle,
     FiInbox, FiCalendar, FiGrid, FiLayers, FiMoreVertical,
     FiStar, FiUsers, FiShare2, FiSettings, FiX, FiInfo,
-    FiLink2, FiImage
+    FiLink2, FiImage, FiClock, FiAlignLeft, FiTag, FiCheckSquare
 } from "react-icons/fi";
 
 const BoardPage = () => {
@@ -13,7 +13,7 @@ const BoardPage = () => {
             id: 1,
             title: "Today Task",
             cards: [
-                { id: 101, title: "Design System", description: "Create initial tokens", members: "JY", dueDate: "2023-12-10", priority: "High" }
+                { id: 101, title: "Design System", description: "Create initial tokens", members: "JY", dueDate: "2023-12-10", priority: "High", createdAt: new Date().toISOString() }
             ]
         }
     ]);
@@ -46,7 +46,14 @@ const BoardPage = () => {
         isClosing: false,
         type: null, // 'task', 'list', 'inbox', 'edit-task', 'edit-list'
         listId: null,
-        editId: null // ID of item being edited
+        editId: null
+    });
+
+    // View Task Details State
+    const [viewTaskModal, setViewTaskModal] = useState({
+        isOpen: false,
+        isClosing: false,
+        task: null
     });
 
     // Task Form State
@@ -57,7 +64,42 @@ const BoardPage = () => {
     const [newItemPriority, setNewItemPriority] = useState("Medium");
 
     const [activeListMenu, setActiveListMenu] = useState(null); // ID of list with active menu
-    const [activeTaskMenu, setActiveTaskMenu] = useState(null); // ID of task with active menu
+
+    const [contextMenu, setContextMenu] = useState({
+        isOpen: false,
+        type: null, // 'task' | 'list'
+        id: null, // task or list id
+        listId: null, // parent list id (for tasks)
+        item: null, // the task or list object
+        x: 0,
+        y: 0
+    });
+
+    const handleContextMenuClick = (e, type, item, listId = null) => {
+        e.stopPropagation();
+        const rect = e.currentTarget.getBoundingClientRect();
+
+        // Toggle if same item clicked, otherwise open new
+        if (contextMenu.isOpen && contextMenu.id === item.id) {
+            closeContextMenu();
+        } else {
+            setContextMenu({
+                isOpen: true,
+                type,
+                id: item.id,
+                listId,
+                item,
+                x: rect.right + 10, // Offset to right
+                y: rect.top
+            });
+            // Close other menus if open
+            if (activeListMenu) setActiveListMenu(null);
+        }
+    };
+
+    const closeContextMenu = () => {
+        setContextMenu({ isOpen: false, type: null, id: null, listId: null, item: null, x: 0, y: 0 });
+    };
 
     const closeAddItemModal = () => {
         setAddItemModal(prev => ({ ...prev, isClosing: true }));
@@ -85,7 +127,8 @@ const BoardPage = () => {
                 description: newItemDesc,
                 members: newItemMembers,
                 dueDate: newItemDate,
-                priority: newItemPriority
+                priority: newItemPriority,
+                createdAt: new Date().toISOString()
             };
             setLists(lists.map(list =>
                 list.id === addItemModal.listId ? { ...list, cards: [...list.cards, newTask] } : list
@@ -122,17 +165,30 @@ const BoardPage = () => {
                 description: newItemDesc,
                 members: newItemMembers,
                 dueDate: newItemDate,
-                priority: newItemPriority
+                priority: newItemPriority,
+                createdAt: new Date().toISOString()
             };
             setInboxCards([...inboxCards, newTask]);
         }
         closeAddItemModal();
     };
 
+    const openTaskDetails = (task) => {
+        setViewTaskModal({ isOpen: true, isClosing: false, task });
+    };
+
+    const closeTaskDetails = () => {
+        setViewTaskModal(prev => ({ ...prev, isClosing: true }));
+        setTimeout(() => {
+            setViewTaskModal({ isOpen: false, isClosing: false, task: null });
+        }, 200);
+    };
+
     const openEditListModal = (list) => {
         setNewItemText(list.title);
         setAddItemModal({ isOpen: true, type: 'edit-list', editId: list.id });
         setActiveListMenu(null);
+        closeContextMenu();
     };
 
     const openEditTaskModal = (task, listId) => {
@@ -142,22 +198,24 @@ const BoardPage = () => {
         setNewItemDate(task.dueDate || "");
         setNewItemPriority(task.priority || "Medium");
         setAddItemModal({ isOpen: true, type: 'edit-task', listId: listId, editId: task.id });
-        setActiveTaskMenu(null);
+        closeContextMenu();
     };
 
     const deleteList = (listId) => {
         setLists(lists.filter(l => l.id !== listId));
         setActiveListMenu(null);
+        closeContextMenu();
     };
 
     const deleteTask = (listId, taskId) => {
-        setLists(lists.map(list => {
-            if (list.id === listId) {
-                return { ...list, cards: list.cards.filter(card => card.id !== taskId) };
-            }
-            return list;
-        }));
-        setActiveTaskMenu(null);
+        if (listId === 'inbox') {
+            setInboxCards(inboxCards.filter(c => c.id !== taskId));
+        } else {
+            setLists(lists.map(list =>
+                list.id === listId ? { ...list, cards: list.cards.filter(c => c.id !== taskId) } : list
+            ));
+        }
+        closeContextMenu();
     };
 
     const createNewBoard = (e) => {
@@ -373,27 +431,15 @@ const BoardPage = () => {
                                 </div>
                                 <div className="inbox-cards">
                                     {inboxCards.map((task, idx) => (
-                                        <div key={task.id || idx} className="card">
+                                        <div key={task.id || idx} className="card" onClick={() => typeof task !== 'string' && openTaskDetails(task)}>
                                             <div className="card-header">
                                                 <span>{typeof task === 'string' ? task : task.title}</span>
                                                 {typeof task !== 'string' && (
                                                     <div style={{ position: 'relative' }}>
                                                         <FiMoreVertical
                                                             className="card-actions"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setActiveTaskMenu(activeTaskMenu === task.id ? null : task.id);
-                                                            }}
+                                                            onClick={(e) => handleContextMenuClick(e, 'task', task, 'inbox')}
                                                         />
-                                                        {activeTaskMenu === task.id && (
-                                                            <div className="context-menu" style={{ top: '20px', right: 0 }}>
-                                                                <div className="context-menu-item" onClick={() => openEditTaskModal(task, 'inbox')}>Edit Task</div>
-                                                                <div className="context-menu-item delete" onClick={() => {
-                                                                    setInboxCards(inboxCards.filter(c => c.id !== task.id));
-                                                                    setActiveTaskMenu(null);
-                                                                }}>Delete</div>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -468,57 +514,50 @@ const BoardPage = () => {
                                     </div>
                                 </div>
                                 <div className="board-lists">
-                                    {lists.map(list => (
-                                        <div key={list.id} className="list-column">
-                                            <div className="list-header">
-                                                <h4>{list.title}</h4>
-                                                <div style={{ position: 'relative' }}>
-                                                    <FiMoreVertical
-                                                        className="list-menu"
-                                                        onClick={() => setActiveListMenu(activeListMenu === list.id ? null : list.id)}
-                                                    />
-                                                    {activeListMenu === list.id && (
-                                                        <div className="context-menu" style={{ top: '20px', right: 0 }}>
-                                                            <div className="context-menu-item" onClick={() => openEditListModal(list)}>Edit List</div>
-                                                            <div className="context-menu-item delete" onClick={() => deleteList(list.id)}>Delete List</div>
-                                                        </div>
-                                                    )}
+                                    {lists.map(list => {
+                                        return (
+                                            <div key={list.id} className="list-column">
+                                                <div className="list-header">
+                                                    <h4>{list.title}</h4>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <FiMoreVertical
+                                                            className="list-menu"
+                                                            onClick={() => setActiveListMenu(activeListMenu === list.id ? null : list.id)}
+                                                        />
+                                                        {activeListMenu === list.id && (
+                                                            <div className="context-menu" style={{ top: '20px', right: 0 }}>
+                                                                <div className="context-menu-item" onClick={() => openEditListModal(list)}>Edit List</div>
+                                                                <div className="context-menu-item delete" onClick={() => deleteList(list.id)}>Delete List</div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="list-cards">
-                                                {list.cards.map((task, i) => (
-                                                    <div key={task.id || i} className="card">
-                                                        <div className="card-header">
-                                                            <span>{task.title}</span>
-                                                            <div style={{ position: 'relative' }}>
-                                                                <FiMoreVertical
-                                                                    className="card-actions"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setActiveTaskMenu(activeTaskMenu === task.id ? null : task.id);
-                                                                    }}
-                                                                />
-                                                                {activeTaskMenu === task.id && (
-                                                                    <div className="context-menu" style={{ top: '20px', right: 0 }}>
-                                                                        <div className="context-menu-item" onClick={() => openEditTaskModal(task, list.id)}>Edit Task</div>
-                                                                        <div className="context-menu-item delete" onClick={() => deleteTask(list.id, task.id)}>Delete</div>
-                                                                    </div>
-                                                                )}
+                                                <div className="list-cards">
+                                                    {list.cards.map((task, i) => (
+                                                        <div key={task.id || i} className="card" onClick={() => openTaskDetails(task)}>
+                                                            <div className="card-header">
+                                                                <span>{task.title}</span>
+                                                                <div style={{ position: 'relative' }}>
+                                                                    <FiMoreVertical
+                                                                        className="card-actions"
+                                                                        onClick={(e) => handleContextMenuClick(e, 'task', task, list.id)}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="card-meta">
+                                                                {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
+                                                                {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
+                                                                {task.members && <span>👤 {task.members}</span>}
                                                             </div>
                                                         </div>
-                                                        <div className="card-meta">
-                                                            {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
-                                                            {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
-                                                            {task.members && <span>👤 {task.members}</span>}
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
+                                                <button className="add-card-btn dark" onClick={() => addTaskToList(list.id)}>
+                                                    <FiPlus /> Add a task
+                                                </button>
                                             </div>
-                                            <button className="add-card-btn dark" onClick={() => addTaskToList(list.id)}>
-                                                <FiPlus /> Add a task
-                                            </button>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                     <button className="add-list-btn" onClick={addNewList}>
                                         <FiPlus /> Add another list
                                     </button>
@@ -647,14 +686,17 @@ const BoardPage = () => {
             </div >
 
             {/* Invisible Backdrop for closing header menus */}
+            {/* Invisible Backdrop for closing header menus AND Context Menus */}
             {
-                (isNotificationsOpen || isProfileMenuOpen || isMenuOpen) && (
+                (isNotificationsOpen || isProfileMenuOpen || isMenuOpen || activeListMenu || contextMenu.isOpen) && (
                     <div
                         style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998, cursor: 'default' }}
                         onClick={() => {
                             if (isNotificationsOpen) closeNotifications();
                             if (isProfileMenuOpen) closeProfileMenu();
                             if (isMenuOpen) closeMenu();
+                            if (activeListMenu) setActiveListMenu(null);
+                            if (contextMenu.isOpen) closeContextMenu();
                         }}
                     />
                 )
@@ -905,6 +947,94 @@ const BoardPage = () => {
                             <button className="submit-btn" onClick={handleAddItemSubmit}>
                                 {addItemModal.type.includes('list') ? (addItemModal.type === 'edit-list' ? "Save List" : "Add List") : (addItemModal.type.includes('edit') ? "Save Task" : "Create Task")}
                             </button>
+                        </div>
+                    </div>
+                )
+            }
+
+            {
+                contextMenu.isOpen && contextMenu.type === 'task' && (
+                    <div
+                        className="context-menu"
+                        style={{
+                            position: 'fixed',
+                            top: contextMenu.y,
+                            left: contextMenu.x,
+                            zIndex: 10001
+                        }}
+                    >
+                        <div className="context-menu-item" onClick={(e) => { e.stopPropagation(); openEditTaskModal(contextMenu.item, contextMenu.listId); }}>Edit Task</div>
+                        <div className="context-menu-item delete" onClick={(e) => { e.stopPropagation(); deleteTask(contextMenu.listId, contextMenu.id); }}>Delete</div>
+                    </div>
+                )
+            }
+
+            {/* Task Details Modal */}
+            {
+                viewTaskModal.isOpen && viewTaskModal.task && (
+                    <div className={`modal-overlay ${viewTaskModal.isClosing ? 'closing' : ''}`}>
+                        <div className="modal-content" style={{ maxWidth: '600px' }}>
+                            <div className="modal-header">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <FiCheckSquare style={{ color: '#4452FE', fontSize: '1.2rem' }} />
+                                    <h3>{viewTaskModal.task.title}</h3>
+                                </div>
+                                <FiX className="modal-close-icon" onClick={closeTaskDetails} />
+                            </div>
+
+                            <div className="task-detail-row">
+                                <FiAlignLeft className="task-detail-icon" />
+                                <div className="task-detail-content">
+                                    <div className="task-detail-label">Description</div>
+                                    <div className="task-detail-value" style={{ color: '#b6c2cf', whiteSpace: 'pre-wrap' }}>
+                                        {viewTaskModal.task.description || "No description provided."}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="task-detail-meta">
+                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                    <FiUsers className="task-detail-icon" />
+                                    <div className="task-detail-content">
+                                        <div className="task-detail-label">Members</div>
+                                        <div className="task-detail-value">{viewTaskModal.task.members || "None"}</div>
+                                    </div>
+                                </div>
+
+                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                    <FiTag className="task-detail-icon" />
+                                    <div className="task-detail-content">
+                                        <div className="task-detail-label">Priority</div>
+                                        <div className="task-detail-value">
+                                            {viewTaskModal.task.priority &&
+                                                <span className={`badge ${viewTaskModal.task.priority.toLowerCase()}`} style={{ fontSize: '0.9rem', padding: '4px 8px' }}>
+                                                    {viewTaskModal.task.priority}
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                    <FiCalendar className="task-detail-icon" />
+                                    <div className="task-detail-content">
+                                        <div className="task-detail-label">Due Date</div>
+                                        <div className="task-detail-value">
+                                            {viewTaskModal.task.dueDate ? new Date(viewTaskModal.task.dueDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : "No Date"}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                    <FiClock className="task-detail-icon" />
+                                    <div className="task-detail-content">
+                                        <div className="task-detail-label">Created At</div>
+                                        <div className="task-detail-value" style={{ fontSize: '0.9rem' }}>
+                                            {viewTaskModal.task.createdAt ? new Date(viewTaskModal.task.createdAt).toLocaleString() : "Unknown"}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )
