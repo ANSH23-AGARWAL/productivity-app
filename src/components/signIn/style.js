@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 
   .right-panel {
     flex: 1;
-    background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
+    background: #0A0F1F;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -25,9 +25,9 @@ const Wrapper = styled.div`
   .signin-box {
     width: 400px;
     padding: 32px 28px;
-    background: rgba(26, 53, 87, 0.4);
+    background: rgba(10, 15, 31, 0.6);
     backdrop-filter: blur(10px);
-    border: 1.5px solid rgba(58, 76, 110, 0.6);
+    border: 1.5px solid rgba(68, 82, 254, 0.3);
     border-radius: 18px;
     box-shadow:
       0 20px 40px rgba(0, 0, 0, 0.3),
@@ -54,12 +54,10 @@ const Wrapper = styled.div`
     font-weight: 900;
     background: linear-gradient(
       270deg,
-      #ff7e5f,
-      #ffe066,
-      #00ffd0,
-      #00bfff,
-      #a259e6,
-      #ff7e5f
+      #4452FE,
+      #2FAFCC,
+      #9B5CFF,
+      #4452FE
     );
     background-size: 400% 400%;
     -webkit-background-clip: text;
@@ -115,7 +113,7 @@ const Wrapper = styled.div`
 /* ✅ Hover Effect same as Sign In Button */
 .social-btn:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: #00ffd0;
+  color: #2FAFCC;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -159,8 +157,8 @@ const Wrapper = styled.div`
   input {
     padding: 12px;
     border-radius: 8px;
-    border: 1.5px solid rgba(58, 76, 110, 0.6);
-    background: rgba(26, 53, 87, 0.3);
+    border: 1.5px solid rgba(68, 82, 254, 0.3);
+    background: rgba(10, 15, 31, 0.3);
     color: #f7f8fa;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -170,9 +168,9 @@ const Wrapper = styled.div`
   }
 
   input:focus {
-    border: 1.5px solid #6bb3a6;
+    border: 1.5px solid #4452FE;
     box-shadow:
-      0 0 0 3px rgba(107, 179, 166, 0.2),
+      0 0 0 3px rgba(68, 82, 254, 0.2),
       inset 0 2px 4px rgba(0, 0, 0, 0.1);
     outline: none;
     transform: translateY(-1px);
@@ -181,7 +179,7 @@ const Wrapper = styled.div`
   /* ✅ Sign In Button with Welcome hover effect */
   button[type='submit'] {
     margin-top: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #4452FE;
     color: #fff;
     font-size: 1.2rem;
     font-weight: 700;
@@ -193,8 +191,8 @@ const Wrapper = styled.div`
   }
 
   button[type='submit']:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #00ffd0;
+    background: #2FAFCC;
+    color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
@@ -212,7 +210,7 @@ const Wrapper = styled.div`
   }
 
   .footer-text a {
-    color: #6bb3a6;
+    color: #4452FE;
     text-decoration: none;
     font-weight: 600;
   }
