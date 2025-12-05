@@ -11,7 +11,7 @@ const Wrapper = styled.div`
     width: 100vw;
   .welcome-left {
     flex: 1;
-    background: #f5f4f1;
+    background: #0A0F1F;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,7 +24,7 @@ const Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f4f1;
+    background: #0A0F1F;
     min-width: 0;
     min-height: 100vh;
     width: 50vw;
@@ -40,7 +40,7 @@ const Wrapper = styled.div`
   .logo-label {
     margin-top: 10px;
     font-size: 1rem;
-    color: #1a3557;
+    color: #4452FE;
     font-family: 'Segoe UI', sans-serif;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -72,21 +72,21 @@ const Wrapper = styled.div`
 
   .welcome-left h1 {
     font-size: 2.8rem;
-    color: #1a3557;
+    color: #ffffff;
     margin-bottom: 10px;
     font-family: 'Segoe UI', sans-serif;
     font-weight: 700;
   }
   .tagline {
     font-size: 1.3rem;
-    color: #6bb3a6;
+    color: #2FAFCC;
     font-style: italic;
     font-family: 'Georgia', serif;
     margin-bottom: 0;
   }
   .welcome-right {
     flex: 1;
-    background: linear-gradient(135deg, #0A0F1F 0%, #111625 100%);
+    background: #0A0F1F;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -145,58 +145,50 @@ const Wrapper = styled.div`
 // }
 
 .header-bar {
-  width: 85%;
-  max-width: 600px;
-  margin: 32px auto 0;
+  width: 80%;
+  margin: 24px auto 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 32px; /* spacing between items */
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
+  gap: 40px; /* spacing between items */
+  padding: 20px 32px;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: #fff;
-  background: rgba(10, 15, 31, 0.6);
+  background: rgba(10, 15, 31, 0.85);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 50px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
-
-.header-bar:hover {
-     background: rgba(10, 15, 31, 0.8);
-     box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-     border-color: rgba(68, 82, 254, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 
 .header-bar .nav-link,
 .header-bar .auth-btn {
   white-space: nowrap;
-  padding: 8px 16px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #cbd5e1;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
   background: transparent;
   border: none;
   text-decoration: none;
-  transition: all 0.3s ease;
-  border-radius: 20px;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  border-radius: 14px;
   cursor: pointer;
 }
 
 .header-auth-buttons {
   display: flex;
-  gap: 16px; /* Reduced gap */
+  gap: 24px; /* Log In and Sign Up ke beech gap */
 }
 
 /* ✅ Minimal, clean hover effect */
 .header-bar .nav-link:hover,
 .header-bar .auth-btn:hover {
-  background: rgba(68, 82, 254, 0.1);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.08); /* subtle color change */
+  color: #4452FE; /* text color change */
+  transform: translateY(-2px); /* slight lift */
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* soft shadow */
 }
 
 
@@ -237,18 +229,28 @@ const Wrapper = styled.div`
 
   /* 🔹 Big Gradient Heading */
  .welcome-heading-big {
-  font-size: 4rem;
+  font-size: 4.2rem;            /* ✅ Fixed size for desktop */
   font-weight: 800;
-  background: linear-gradient(90deg, #4452FE, #2FAFCC, #ffffff);
+  background: linear-gradient(
+    270deg,
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
+    #4452FE,
+    #2FAFCC,
+    #9B5CFF,
+    #4452FE
+  );
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-  letter-spacing: -1px;
-  margin-bottom: 24px;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
   text-align: left;
-  filter: drop-shadow(0 0 20px rgba(68, 82, 254, 0.2));
-  line-height: 1.1;
+  text-shadow: 0 0 15px rgba(68, 82, 254, 0.3);
 }
 
   @keyframes gradientFlow {
@@ -367,16 +369,17 @@ const Wrapper = styled.div`
   }
 
   
-  /* Intro Text */
   .large-intro.left-message {
-    font-size: 1.2rem;
-    color: #94a3b8; /* Slate gray for better readability */
+    font-size: 1.1rem;
+    color: #fafdff;
     margin-bottom: 48px;
-    max-width: 600px;
-    line-height: 1.8;
+    max-width: 700px;
+    line-height: 2.2;
     text-align: left;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.03em;
     font-weight: 400;
+    text-shadow: 0 2px 12px #1a355755;
+    margin-top: 18px;
   }
 
 
@@ -395,4 +398,4 @@ const Wrapper = styled.div`
 
 `;
 
-export default Wrapper;
+export default Wrapper; 

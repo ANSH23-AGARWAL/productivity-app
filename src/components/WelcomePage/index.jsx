@@ -16,6 +16,7 @@ const WelcomePage = () => {
             <Link to="/contact" className="nav-link">Contact</Link>
             <div className="header-auth-buttons">
               <Link to="/sign-in" className="nav-link">Log In</Link>
+              <Link to="/sign-up" className="nav-link">Sign Up</Link>
             </div>
           </div>
           <div className="welcome-content left-align">
@@ -30,4 +31,4 @@ const WelcomePage = () => {
   );
 };
 
-export default WelcomePage;
+export default WelcomePage; 
