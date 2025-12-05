@@ -36,6 +36,7 @@ import {
 } from './style.js';
 
 const BoardPage = () => {
+  const navigate = useNavigate();
   const [panelOpen, setPanelOpen] = useState(null);
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
@@ -47,8 +48,7 @@ const BoardPage = () => {
   const [cards, setCards] = useState([]);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [templateName, setTemplateName] = useState('');
-
-  const navigate = useNavigate();
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState([]);
 
   const inboxRef = useRef(null);
   const profileRef = useRef(null);
@@ -80,6 +80,21 @@ const BoardPage = () => {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const today = new Date();
+
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const upcoming = cards.filter(card => {
+
+      const due = new Date(card.dueDate);
+      const dueStart = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+      const diffMs = dueStart - startOfToday;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 3;
+    });
+    setUpcomingDeadlines(upcoming);
+  }, [cards]);
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
@@ -184,9 +199,20 @@ const BoardPage = () => {
             </div>
             <div className="upcoming-deadlines-section">
               <h2>Upcoming Deadlines</h2>
-              <div className="deadlines-placeholder">
-                <p>No upcoming deadlines.</p>
-              </div>
+              {upcomingDeadlines.length === 0 ? (
+                <div className="deadlines-placeholder">
+                  <p>No upcoming deadlines.</p>
+                </div>
+              ) : (
+                <div className="upcoming-list">
+                  {upcomingDeadlines.map(card => (
+                    <div key={card.id} className="upcoming-item">
+                      <span>{card.title}</span>
+                      <small>Due: {card.dueDate}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </ContentArea>
@@ -226,12 +252,12 @@ const BoardPage = () => {
               <p>user.email@example.com</p>
             </div>
             <div className="profile-options">
-              <div className="option-item">
+              <div className="option-item" onClick={() => navigate('/switch')}>
                 <span>Switch Account</span> <ChevronDown size={18} />
               </div>
-              <div className="option-item">Manage Account</div>
+              <div className="option-item" onClick={() => navigate('/manage')}>Manage Account</div>
               <div className="option-item">Settings</div>
-              <div className="option-item">Help</div>
+              <div className="option-item" onClick={() => navigate('/help')}>Help</div>
               <div className="option-item theme-option">
                 <span>Theme</span>
                 <ThemeToggleButton onClick={toggleTheme}>
