@@ -233,6 +233,10 @@ const Wrapper = styled.div`
   font-weight: 800;
   background: linear-gradient(
     270deg,
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     #4452FE,
     #2FAFCC,
     #9B5CFF,
