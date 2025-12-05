@@ -328,7 +328,8 @@ const Wrapper = styled.div`
         flex-direction: column;
         gap: 0.5rem;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
+        /* overflow: hidden; Removed to allow popups to spill out */
+        position: relative; /* Context */
     }
     .list-header { 
         display: flex; 
@@ -693,7 +694,7 @@ const Wrapper = styled.div`
     /* Context Menus (List & Task) */
     .context-menu {
         position: absolute;
-        width: 160px;
+        width: 180px;
         background: rgba(10, 15, 31, 0.95);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -703,8 +704,13 @@ const Wrapper = styled.div`
         overflow: hidden;
         animation: fadeIn 0.1s ease-out;
     }
+    .context-menu.right-side {
+        left: 100%;
+        top: 0;
+        margin-left: 0.5rem;
+    }
     .context-menu-item {
-        padding: 0.6rem 1rem;
+        padding: 0.7rem 1rem;
         cursor: pointer;
         color: #e3e6e8;
         font-size: 0.9rem;
@@ -712,6 +718,41 @@ const Wrapper = styled.div`
         align-items: center;
         gap: 0.5rem;
         transition: background 0.2s;
+    }
+    /* Task Details Modal Styles */
+    .task-detail-row {
+        display: flex;
+        margin-bottom: 1rem;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .task-detail-icon {
+        color: #9fadbc;
+        margin-top: 0.2rem;
+        font-size: 1.1rem;
+    }
+    .task-detail-content {
+        flex: 1;
+    }
+    .task-detail-label {
+        font-size: 0.85rem;
+        color: #9fadbc;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+    .task-detail-value {
+        font-size: 1rem;
+        color: #fff;
+        line-height: 1.5;
+    }
+    .task-detail-meta {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
     }
     .context-menu-item:hover {
         background: rgba(68, 82, 254, 0.2);
