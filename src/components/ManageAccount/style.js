@@ -2,10 +2,10 @@ import styled from "styled-components";
 
 // --- Main Layout Components ---
 export const PageWrapper = styled.div`
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: #f9fafb;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #0A0F1F; /* Deep Dark BG */
   min-height: 100vh;
-  color: #1f2937;
+  color: #FFFFFF;
 `;
 
 export const Container = styled.div`
@@ -19,36 +19,52 @@ export const Container = styled.div`
 
 export const Header = styled.header`
   padding-bottom: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #1F2940;
   margin-bottom: 8px;
 
   h2 {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0 0 8px 0;
+    color: #FFFFFF;
+    letter-spacing: 0.5px;
   }
   
   p {
     margin: 0;
     font-size: 14px;
-    color: #6b7280;
+    color: #A0AEC0; /* Secondary Text */
   }
 `;
 
 export const HeaderLeft = styled.div``;
 
 export const Card = styled.section`
-  background: white;
+  background: #162032; /* Dark Card BG */
   padding: 24px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  border: 1px solid #1F2940;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+
+  /* Optional gloss effect */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #4452FE, #9B5CFF);
+  }
 `;
 
 export const SectionTitle = styled.h3`
   margin: 0 0 20px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #111827;
+  color: #FFFFFF;
 `;
 
 // --- Image Components ---
@@ -63,14 +79,14 @@ export const ProfilePhoto = styled.div`
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #0052cc;
+  background: linear-gradient(135deg, #4452FE, #2FAFCC);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 0 0 1px #e5e7eb;
+  border: 3px solid #162032; /* Match card bg for integrated look */
+  box-shadow: 0 0 0 2px #4452FE;
 
   img { width: 100%; height: 100%; object-fit: cover; }
 `;
@@ -84,11 +100,17 @@ export const ProfileInitial = styled.span`
 export const HeaderImage = styled.div`
   width: 100%;
   height: 120px;
-  border-radius: 8px;
-  background-color: #e0eaff;
-  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background-color: #1A2333;
+  border: 1px solid #2D3748;
   cursor: pointer;
   overflow: hidden;
+  position: relative;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #4452FE;
+  }
 
   img { width: 100%; height: 100%; object-fit: cover; }
 `;
@@ -101,23 +123,23 @@ export const FieldRow = styled.div`
   gap: 24px;
   padding: 16px 0;
   
-  & + & { border-top: 1px solid #f3f4f6; }
+  & + & { border-top: 1px solid #1F2940; }
 `;
 
 export const Label = styled.div`
   font-weight: 500;
-  color: #374151;
+  color: #A0AEC0;
   font-size: 14px;
 `;
 
 export const Value = styled.div`
   font-size: 14px;
-  color: #1f2937;
+  color: #FFFFFF;
   flex-grow: 1; 
 `;
 
 export const PlaceholderText = styled.i`
-  color: #9ca3af;
+  color: #718096;
 `;
 
 export const FieldControls = styled.div`
@@ -128,32 +150,43 @@ export const FieldControls = styled.div`
 `;
 
 export const EditInput = styled.input`
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #2D3748;
   flex-grow: 1;
   font-size: 14px;
+  background-color: #1A2333; /* Dark Input */
+  color: #FFFFFF;
+  transition: all 0.2s;
   
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    border-color: #4452FE;
+    box-shadow: 0 0 0 2px rgba(68, 82, 254, 0.25);
+    background-color: #162032;
   }
 `;
 
 // **NEW: Styling for the location dropdown**
 export const StyledSelect = styled.select`
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #2D3748;
   flex-grow: 1;
   font-size: 14px;
-  background-color: white;
+  background-color: #1A2333;
+  color: #FFFFFF;
+  transition: all 0.2s;
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    border-color: #4452FE;
+    box-shadow: 0 0 0 2px rgba(68, 82, 254, 0.25);
+  }
+  
+  option {
+    background-color: #162032;
+    color: #FFFFFF;
   }
 `;
 
@@ -161,42 +194,56 @@ export const StyledSelect = styled.select`
 export const ActionButton = styled.button`
   background: transparent;
   border: none;
-  color: #3b82f6;
+  color: #4452FE; /* Accent */
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
   margin-left: auto; 
+  transition: all 0.2s;
   
-  &:hover { text-decoration: underline; }
+  &:hover {
+    background-color: rgba(68, 82, 254, 0.1);
+    text-decoration: none;
+  }
 `;
 
 export const SaveBtn = styled.button`
-  background: #2563eb;
+  background: #4452FE;
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(68, 82, 254, 0.3);
+  transition: all 0.2s;
 
-  &:hover { background: #1d4ed8; }
+  &:hover { 
+    background: #3545CC;
+    transform: translateY(-1px);
+  }
 `;
 
 export const CancelBtn = styled.button`
-  background: #e5e7eb;
-  color: #4b5563;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background: transparent;
+  color: #A0AEC0;
+  border: 1px solid #2D3748;
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+  transition: all 0.2s;
   
-  &:hover { background: #d1d5db; }
+  &:hover { 
+    background: #1F2940;
+    color: #FFFFFF;
+  }
 `;
 
 export const PermissionSelect = styled.select`
@@ -204,20 +251,26 @@ export const PermissionSelect = styled.select`
   font-size: 14px;
   border: none;
   background-color: transparent;
-  color: #6b7280;
+  color: #A0AEC0;
   font-weight: 500;
-  padding: 4px;
+  padding: 6px;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: #1F2940;
+    color: #FFFFFF;
+  }
+  option {
+    background-color: #162032;
+    color: #FFFFFF;
   }
 `;
 
 export const SmallNote = styled.div`
   font-size: 14px;
-  color: #6b7280;
+  color: #718096;
   display: flex;
   align-items: center;
   gap: 6px;

@@ -15,22 +15,22 @@ export const GlobalStyle = createGlobalStyle`
       --light-card-border: #EEEEEE;
       --light-button-bg: #F0F0F0;
       --light-button-hover-bg: #E0E0E0;
-      --light-accent-color: #1a73e8;
+      --light-accent-color: #4452FE;
       --light-shadow: rgba(0, 0, 0, 0.1);
       --light-inset-shadow: rgba(0, 0, 0, 0.05);
 
-      --dark-bg: #1A2A4A;
-      --dark-header-bg: #0F1E3A;
-      --dark-text-color: #E0E0E0;
-      --dark-secondary-text-color: #BBBBBB;
-      --dark-border-color: #2F3E5A;
-      --dark-card-bg: #223555;
-      --dark-card-border: #3A4C6B;
-      --dark-button-bg: #2B4268;
-      --dark-button-hover-bg: #355080;
-      --dark-accent-color: #8AB4F8;
-      --dark-shadow: rgba(0, 0, 0, 0.4);
-      --dark-inset-shadow: rgba(0, 0, 0, 0.2);
+      --dark-bg: #0A0F1F;
+      --dark-header-bg: #0A0F1F;
+      --dark-text-color: #FFFFFF;
+      --dark-secondary-text-color: #A0AEC0;
+      --dark-border-color: #1F2940;
+      --dark-card-bg: #162032;
+      --dark-card-border: #2D3748;
+      --dark-button-bg: #1A2333;
+      --dark-button-hover-bg: #253045;
+      --dark-accent-color: #4452FE;
+      --dark-shadow: rgba(0, 0, 0, 0.6);
+      --dark-inset-shadow: rgba(0, 0, 0, 0.3);
     }
 
     body {
@@ -113,7 +113,7 @@ export const Header = styled.header`
       font-weight: bold;
       color: var(--text-color);
       letter-spacing: 0.5px;
-      background: linear-gradient(90deg, #6366f1, #00d4ff, #8a2be2);
+      background: linear-gradient(90deg, #4452FE, #2FAFCC, #9B5CFF);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -257,8 +257,8 @@ export const ContentArea = styled.div`
     background-color: transparent;
 
     ${(props) =>
-      props.panelOpen &&
-      css`
+    props.panelOpen &&
+    css`
         padding-right: 340px;
         transition: padding-right 0.3s ease-out;
       `}
