@@ -1,5 +1,6 @@
 // index.jsx
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -37,6 +38,7 @@ import {
 } from './style.js';
 
 const BoardPage = () => {
+  const navigate = useNavigate();
   const [panelOpen, setPanelOpen] = useState(null);
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
@@ -84,18 +86,18 @@ const BoardPage = () => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  
+
   useEffect(() => {
     const today = new Date();
-  
+
     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const upcoming = cards.filter(card => {
-  
+
       const due = new Date(card.dueDate);
       const dueStart = new Date(due.getFullYear(), due.getMonth(), due.getDate());
       const diffMs = dueStart - startOfToday;
       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        return diffDays >= 0 && diffDays <= 3;
+      return diffDays >= 0 && diffDays <= 3;
     });
     setUpcomingDeadlines(upcoming);
   }, [cards]);
@@ -114,7 +116,7 @@ const BoardPage = () => {
       id: Date.now(),
       title: cardTitle,
       description: cardDescription,
-      dueDate: cardDueDate, 
+      dueDate: cardDueDate,
       member: cardMember,
       priority: cardPriority,
       lastUpdated: new Date().toLocaleString(),
@@ -284,12 +286,12 @@ const BoardPage = () => {
               <p>user.email@example.com</p>
             </div>
             <div className="profile-options">
-              <div className="option-item">
+              <div className="option-item" onClick={() => navigate('/switch')}>
                 <span>Switch Account</span> <ChevronDown size={18} />
               </div>
-              <div className="option-item">Manage Account</div>
+              <div className="option-item" onClick={() => navigate('/manage')}>Manage Account</div>
               <div className="option-item">Settings</div>
-              <div className="option-item">Help</div>
+              <div className="option-item" onClick={() => navigate('/help')}>Help</div>
               <div className="option-item theme-option">
                 <span>Theme</span>
                 <ThemeToggleButton onClick={toggleTheme}>
