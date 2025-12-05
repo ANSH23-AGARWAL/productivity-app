@@ -2,53 +2,25 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
 
-  /* ✅ Background with soft gradient matching BoardPage */
-   background: linear-gradient(145deg, #0A0F1F, #111625);
+  /* ✅ Background with soft gradient */
+   background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
   min-height: 100vh;
   width: 100vw;
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  color: #fff;
+  color: #f8f9fa;
   display: flex;
   justify-content: center;
   padding: 60px 20px;
-  position: relative; /* For back button positioning */
-
-  /* ✅ Back Button */
-  .back-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-  }
-
-  .back-btn:hover {
-    background: rgba(68, 82, 254, 0.8);
-    transform: scale(1.05);
-  }
 
   /* ✅ Glass Effect Main Container */
   .about-container {
     max-width: 1100px;
     width: 100%;
     padding: 60px 40px;
-    background: rgba(10, 15, 31, 0.6);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(255, 255, 255, 0.04);
     border-radius: 20px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
-    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    backdrop-filter: blur(12px);
     animation: fadeIn 0.8s ease forwards;
   }
 
@@ -61,18 +33,17 @@ const Wrapper = styled.div`
   .about-heading-gradient {
     font-size: 3rem;
     font-weight: 800;
-    background: linear-gradient(90deg, #4452FE, #2FAFCC, #ffffff);
+    background: linear-gradient(90deg, #00ffd0, #00bfff, #6bb3a6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 32px;
     text-align: center;
     letter-spacing: 1px;
-    filter: drop-shadow(0 2px 10px rgba(68, 82, 254, 0.3));
   }
 
   /* ✅ Section Headings */
   .section-heading {
-    color: #fff;
+    color: #6bb3a6;
     font-size: 1.8rem;
     font-weight: 700;
     margin: 40px 0 12px 0;
@@ -89,15 +60,14 @@ const Wrapper = styled.div`
     width: 60px;
     height: 3px;
     border-radius: 3px;
-    background: linear-gradient(90deg, #4452FE, #2FAFCC);
-    box-shadow: 0 0 10px rgba(68, 82, 254, 0.5);
+    background: linear-gradient(90deg, #00ffd0, #6bb3a6);
   }
 
   /* ✅ Paragraphs */
   p {
     font-size: 1.1rem;
     line-height: 1.7;
-    color: #94a3b8;
+    color: #e0e6ed;
     margin-bottom: 18px;
   }
 
@@ -113,28 +83,25 @@ const Wrapper = styled.div`
     font-size: 1.05rem;
     display: flex;
     align-items: center;
-    color: #cbd5e1;
     transition: transform 0.25s ease;
   }
 
   .why-list li:hover {
     transform: translateX(5px);
-    color: #fff;
   }
 
   .checkmark-box {
     width: 22px;
     height: 22px;
     border-radius: 6px;
-    background: rgba(68, 82, 254, 0.2);
-    border: 1px solid #4452FE;
-    color: #4452FE;
+    background: #00ffd0;
+    color: #0d1b2a;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     font-weight: 700;
     margin-right: 10px;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   /* ✅ Core Values Cards */
@@ -147,39 +114,36 @@ const Wrapper = styled.div`
   }
 
   .core-value {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(148, 163, 184, 0.1);
+    background: rgba(255,255,255,0.05);
     border-radius: 16px;
     padding: 24px;
     min-width: 200px;
     max-width: 240px;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .core-value:hover {
     transform: translateY(-6px);
-    border-color: #4452FE;
-    box-shadow: 0 8px 24px rgba(68, 82, 254, 0.15);
+    box-shadow: 0 8px 24px rgba(0,255,208,0.2);
   }
 
   .core-icon {
     font-size: 2.2rem;
-    color: #2FAFCC;
+    color: #00ffd0;
     margin-bottom: 10px;
-    filter: drop-shadow(0 0 5px rgba(47, 175, 204, 0.4));
   }
 
   .core-label {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
+    color: #6bb3a6;
     margin-bottom: 6px;
   }
 
   .core-desc {
     font-size: 0.95rem;
-    color: #94a3b8;
+    color: #dfe6ed;
   }
 
  /* ✅ Team Section */
@@ -187,7 +151,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 40px;
+  gap: 40px; /* thoda zyada spacing for clean look */
   margin-top: 40px;
   max-width: 1000px;
   margin-left: auto;
@@ -206,6 +170,7 @@ const Wrapper = styled.div`
 
 .team-member:hover {
   transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 255, 208, 0.15);
 }
 
 /* ✅ Avatar */
@@ -213,18 +178,16 @@ const Wrapper = styled.div`
   width: 250px;
   height: 250px;
   border-radius: 50%;
-  border: 4px solid #4452FE; /* Primary Blue Border */
+  border: 5px solid #00ffd0;
   object-fit: cover;
   margin-bottom: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+  box-shadow: 0 6px 20px rgba(0, 255, 208, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 
 .team-member:hover .avatar-photo {
   transform: scale(1.05);
-  border-color: #2FAFCC;
-  box-shadow: 0 10px 30px rgba(68, 82, 254, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 255, 208, 0.3);
 }
 
 /* ✅ Jitendra Yadav ki photo ke liye custom positioning */
@@ -232,19 +195,6 @@ const Wrapper = styled.div`
   object-position: center 30%; /* Face ko niche shift karega */
 }
 
-.avatar-placeholder {
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-    color: #4452FE;
-    border: 4px solid #4452FE;
-    margin-bottom: 14px;
-}
 
 /* ✅ Name & Role */
 .member-name {
@@ -257,18 +207,17 @@ const Wrapper = styled.div`
 
 .member-role {
   font-size: 1.05rem;
-  color: #2FAFCC; /* Cyan accent for role */
+  color: #6bb3a6;
   text-align: center;
 }
-
-/* ✅ LinkedIn Button - Keeping brand color but refined for dark theme */
+  /* ✅ LinkedIn Button */
 .linkedin-link {
-  margin-top: 12px;
+  margin-top: 8px;
   padding: 8px 16px;
   border-radius: 30px;
-  background: rgba(47, 175, 204, 0.1); 
-  border: 1px solid #2FAFCC;
-  color: #2FAFCC;
+  background: rgba(10, 102, 194, 0.15);
+  border: 2px solid #0A66C2;
+  color: #0A66C2;
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
@@ -277,27 +226,28 @@ const Wrapper = styled.div`
   justify-content: center;
   gap: 6px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.2);
   backdrop-filter: blur(6px);
 }
 
-.linkedin-link svg path {
-    fill: #2FAFCC; /* Match text */
-}
-.linkedin-link svg rect {
-    fill: transparent; /* Remove rect fill */
+/* ✅ Icon ke liye thoda hover animation */
+.linkedin-link svg {
+  transition: transform 0.3s ease;
 }
 
 /* ✅ Hover Effect */
 .linkedin-link:hover {
-  background: #2FAFCC;
-  color: #0A0F1F;
-  box-shadow: 0 0 15px rgba(47, 175, 204, 0.4);
-  transform: translateY(-2px);
+  background: #0A66C2;
+  color: #fff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
 }
 
-.linkedin-link:hover svg path {
-    fill: #0A0F1F;
+.linkedin-link:hover svg {
+  transform: rotate(8deg) scale(1.1);
 }
+
+
 
   /* ✅ Mobile Responsive */
   @media (max-width: 900px) {
@@ -310,9 +260,9 @@ const Wrapper = styled.div`
     .core-values-list {
       justify-content: center;
     }
-    .avatar-photo, .avatar-placeholder {
-      width: 150px;
-      height: 150px;
+    .avatar-photo {
+      width: 130px;
+      height: 130px;
     }
   }
 `;

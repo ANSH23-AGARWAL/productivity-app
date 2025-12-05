@@ -19,33 +19,6 @@ const Wrapper = styled.div`
     align-items: center;
     justify-content: center;
     padding: 20px;
-    position: relative;
-  }
-
-  /* ✅ Back Button */
-  .back-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-  }
-
-  .back-btn:hover {
-    background: rgba(68, 82, 254, 0.8);
-    transform: scale(1.05);
   }
 
   /* ✅ Glassmorphism Box */

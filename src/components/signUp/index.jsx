@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Wrapper from './style';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -18,7 +17,7 @@ const SignUp = () => {
       return;
     }
 
-
+    
     if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
@@ -41,11 +40,8 @@ const SignUp = () => {
     <Wrapper>
       <div className="container">
         <div className="left-panel" />
-
+        
         <div className="right-panel">
-          <button className="back-btn" onClick={() => navigate(-1)}>
-            <FiArrowLeft /> Back
-          </button>
           <div className="signup-box">
             <h2>Create Account</h2>
 

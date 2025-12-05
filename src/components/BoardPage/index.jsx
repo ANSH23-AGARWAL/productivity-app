@@ -1,13 +1,28 @@
-import React, { useState } from "react";
-import Wrapper from "./style";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import Wrapper, { ThemeToggleButton } from "./style";
+import { Droppable, Draggable, DragDropContext } from '@hello-pangea/dnd';
+import { GlobalStyle } from "../Dashboard/style";
 import {
     FiSearch, FiPlus, FiVolume2, FiBell, FiHelpCircle,
     FiInbox, FiCalendar, FiGrid, FiLayers, FiMoreVertical,
     FiStar, FiUsers, FiShare2, FiSettings, FiX, FiInfo,
-    FiLink2, FiImage, FiClock, FiAlignLeft, FiTag, FiCheckSquare
+    FiLink2, FiImage, FiClock, FiAlignLeft, FiTag, FiCheckSquare,
+    FiSun, FiMoon
 } from "react-icons/fi";
 
 const BoardPage = () => {
+    const navigate = useNavigate();
+    const [theme, setTheme] = useState('dark');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    };
+
     const [lists, setLists] = useState([
         {
             id: 1,
@@ -332,7 +347,15 @@ const BoardPage = () => {
     };
 
     const handleProfileOption = (option) => {
-        alert(`${option} clicked`);
+        if (option === 'Switch Account') {
+            navigate('/switch');
+        } else if (option === 'Manage Account') {
+            navigate('/manage');
+        } else if (option === 'Help') {
+            navigate('/help');
+        } else {
+            alert(`${option} clicked`);
+        }
         setIsProfileMenuOpen(false);
     };
 
@@ -390,38 +413,86 @@ const BoardPage = () => {
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    return (
-        <Wrapper>
-            <div className="board-container">
-                {/* Header */}
-                <header className="header-bar">
-                    <div className="header-left">
-                        <img src="/BoardWise-logo.png" alt="BoardWise logo" className="logo-img" />
-                    </div>
-                    <div className="header-middle">
-                        <div className="search-box">
-                            <FiSearch className="search-icon" />
-                            <input
-                                type="text"
-                                id="search-input"
-                                placeholder="Search your boards..."
-                                className="search-input"
-                                onKeyDown={(e) => createNewBoard(e)}
-                            />
-                        </div>
-                        <button className="create-btn" onClick={createNewBoard}><FiPlus /> Create</button>
-                    </div>
-                    <div className="header-right">
-                        <FiVolume2 className={`icon ${isFeedbackModalOpen ? "active" : ""}`} onClick={handleVolumeClick} />
-                        <FiBell className={`icon ${isNotificationsOpen ? "active" : ""}`} onClick={handleNotificationClick} />
-                        <FiHelpCircle className="icon" />
-                        <div className={`avatar ${isProfileMenuOpen ? "active-ring" : ""}`} onClick={handleProfileClick}>JY</div>
-                    </div>
-                </header>
+    const onDragEnd = (result) => {
+        const { source, destination, type } = result;
 
-                {/* Main Content */}
-                <main className="main-content">
-                    <div className="content-wrapper">
+        if (!destination) return;
+
+        // Handle List Reordering
+        if (type === 'list') {
+            const newLists = Array.from(lists);
+            const [reorderedList] = newLists.splice(source.index, 1);
+            newLists.splice(destination.index, 0, reorderedList);
+            setLists(newLists);
+            return;
+        }
+
+        // Handle Task Reordering/Moving
+        const newInbox = Array.from(inboxCards);
+        const newLists = lists.map(l => ({ ...l, cards: [...l.cards] }));
+
+        // Identify Source Array
+        let sourceCards;
+        if (source.droppableId === 'inbox') {
+            sourceCards = newInbox;
+        } else {
+            const sourceList = newLists.find(l => l.id.toString() === source.droppableId);
+            if (sourceList) sourceCards = sourceList.cards;
+        }
+
+        // Identify Dest Array
+        let destCards;
+        if (destination.droppableId === 'inbox') {
+            destCards = newInbox;
+        } else {
+            const destList = newLists.find(l => l.id.toString() === destination.droppableId);
+            if (destList) destCards = destList.cards;
+        }
+
+        if (!sourceCards || !destCards) return;
+
+        // Move
+        const [moved] = sourceCards.splice(source.index, 1);
+        destCards.splice(destination.index, 0, moved);
+
+        // Update States
+        setInboxCards(newInbox);
+        setLists(newLists);
+    };
+
+    return (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Wrapper>
+                <GlobalStyle />
+                <div className="board-container">
+                    {/* Header */}
+                    <header className="header-bar">
+                        <div className="header-left">
+                            <img src="/BoardWise-logo.png" alt="BoardWise logo" className="logo-img" />
+                        </div>
+                        <div className="header-middle">
+                            <div className="search-box">
+                                <FiSearch className="search-icon" />
+                                <input
+                                    type="text"
+                                    id="search-input"
+                                    placeholder="Search your boards..."
+                                    className="search-input"
+                                    onKeyDown={(e) => createNewBoard(e)}
+                                />
+                            </div>
+                            <button className="create-btn" onClick={createNewBoard}><FiPlus /> Create</button>
+                        </div>
+                        <div className="header-right">
+                            <FiVolume2 className={`icon ${isFeedbackModalOpen ? "active" : ""}`} onClick={handleVolumeClick} />
+                            <FiBell className={`icon ${isNotificationsOpen ? "active" : ""}`} onClick={handleNotificationClick} />
+                            <FiHelpCircle className="icon" />
+                            <div className={`avatar ${isProfileMenuOpen ? "active-ring" : ""}`} onClick={handleProfileClick}>JY</div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="main-content">
                         {/* Inbox Sidebar (Conditionally rendered) */}
                         {isInboxOpen && !isPlannerOpen && (
                             <aside className="sidebar">
@@ -429,57 +500,55 @@ const BoardPage = () => {
                                     <FiInbox className="inbox-icon" />
                                     <h3>Inbox</h3>
                                 </div>
-                                <div className="inbox-cards">
-                                    {inboxCards.map((task, idx) => (
-                                        <div key={task.id || idx} className="card" onClick={() => typeof task !== 'string' && openTaskDetails(task)}>
-                                            <div className="card-header">
-                                                <span>{typeof task === 'string' ? task : task.title}</span>
-                                                {typeof task !== 'string' && (
-                                                    <div style={{ position: 'relative' }}>
-                                                        <FiMoreVertical
-                                                            className="card-actions"
-                                                            onClick={(e) => handleContextMenuClick(e, 'task', task, 'inbox')}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {typeof task !== 'string' && (
-                                                <div className="card-meta">
-                                                    {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
-                                                    {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
-                                                </div>
-                                            )}
+                                <Droppable droppableId="inbox" type="task">
+                                    {(provided) => (
+                                        <div
+                                            className="inbox-cards"
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                        >
+                                            {inboxCards.map((task, idx) => {
+                                                const taskId = task.id ? task.id.toString() : `inbox-${idx}`;
+                                                return (
+                                                    <Draggable key={taskId} draggableId={taskId} index={idx}>
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className="card"
+                                                                onClick={() => typeof task !== 'string' && openTaskDetails(task)}
+                                                                style={{ ...provided.draggableProps.style, marginBottom: '8px' }}
+                                                            >
+                                                                <div className="card-header">
+                                                                    <span>{typeof task === 'string' ? task : task.title}</span>
+                                                                    {typeof task !== 'string' && (
+                                                                        <div style={{ position: 'relative' }}>
+                                                                            <FiMoreVertical
+                                                                                className="card-actions"
+                                                                                onClick={(e) => handleContextMenuClick(e, 'task', task, 'inbox')}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                {typeof task !== 'string' && (
+                                                                    <div className="card-meta">
+                                                                        {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
+                                                                        {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                );
+                                            })}
+                                            {provided.placeholder}
                                         </div>
-                                    ))}
-                                </div>
+                                    )}
+                                </Droppable>
                                 <button className="add-card-btn dark" onClick={addCardToInbox}>
                                     <FiPlus /> Add a task
                                 </button>
-                            </aside>
-                        )}
-
-                        {/* Planner Sidebar (Conditionally rendered) */}
-                        {isPlannerOpen && (
-                            <aside className="sidebar planner-sidebar-main">
-                                <div className="planner-header-main">
-                                    <FiCalendar className="inbox-icon" />
-                                    <h3>Planner</h3>
-                                </div>
-                                <div className="planner-view-selector">
-                                    <button className="view-btn active">Day</button>
-                                    <button className="view-btn">Week</button>
-                                    <button className="view-btn">Month</button>
-                                </div>
-                                <div className="planner-date-display">{formattedDate}</div>
-                                <div className="planner-tasks">
-                                    <p className="planner-info">📅 Add dates to your cards to see them here</p>
-                                    <div className="planner-hint">
-                                        <p><strong>How to use Planner:</strong></p>
-                                        <p>1️⃣ Click any card and set a due date</p>
-                                        <p>2️⃣ Cards with dates appear here automatically</p>
-                                        <p>3️⃣ Drag & drop to reschedule tasks</p>
-                                    </div>
-                                </div>
                             </aside>
                         )}
 
@@ -513,55 +582,94 @@ const BoardPage = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="board-lists">
-                                    {lists.map(list => {
-                                        return (
-                                            <div key={list.id} className="list-column">
-                                                <div className="list-header">
-                                                    <h4>{list.title}</h4>
-                                                    <div style={{ position: 'relative' }}>
-                                                        <FiMoreVertical
-                                                            className="list-menu"
-                                                            onClick={() => setActiveListMenu(activeListMenu === list.id ? null : list.id)}
-                                                        />
-                                                        {activeListMenu === list.id && (
-                                                            <div className="context-menu" style={{ top: '20px', right: 0 }}>
-                                                                <div className="context-menu-item" onClick={() => openEditListModal(list)}>Edit List</div>
-                                                                <div className="context-menu-item delete" onClick={() => deleteList(list.id)}>Delete List</div>
+                                <Droppable droppableId="board-lists" direction="horizontal" type="list">
+                                    {(provided) => (
+                                        <div
+                                            className="board-lists"
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                        >
+                                            {lists.map((list, index) => {
+                                                return (
+                                                    <Draggable key={list.id} draggableId={list.id.toString()} index={index}>
+                                                        {(provided) => (
+                                                            <div
+                                                                className="list-column"
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                            >
+                                                                <div className="list-header" {...provided.dragHandleProps}>
+                                                                    <h4>{list.title}</h4>
+                                                                    <div style={{ position: 'relative' }}>
+                                                                        <FiMoreVertical
+                                                                            className="list-menu"
+                                                                            onClick={() => setActiveListMenu(activeListMenu === list.id ? null : list.id)}
+                                                                        />
+                                                                        {activeListMenu === list.id && (
+                                                                            <div className="context-menu" style={{ top: '20px', right: 0 }}>
+                                                                                <div className="context-menu-item" onClick={() => openEditListModal(list)}>Edit List</div>
+                                                                                <div className="context-menu-item delete" onClick={() => deleteList(list.id)}>Delete List</div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <Droppable droppableId={list.id.toString()} type="task">
+                                                                    {(provided) => (
+                                                                        <div
+                                                                            className="list-cards"
+                                                                            ref={provided.innerRef}
+                                                                            {...provided.droppableProps}
+                                                                            style={{ minHeight: '10px' }}
+                                                                        >
+                                                                            {list.cards.map((task, i) => (
+                                                                                <Draggable key={task.id} draggableId={task.id.toString()} index={i}>
+                                                                                    {(provided) => (
+                                                                                        <div
+                                                                                            key={task.id || i}
+                                                                                            className="card"
+                                                                                            onClick={() => openTaskDetails(task)}
+                                                                                            ref={provided.innerRef}
+                                                                                            {...provided.draggableProps}
+                                                                                            {...provided.dragHandleProps}
+                                                                                            style={{ ...provided.draggableProps.style, marginBottom: '8px' }}
+                                                                                        >
+                                                                                            <div className="card-header">
+                                                                                                <span>{task.title}</span>
+                                                                                                <div style={{ position: 'relative' }}>
+                                                                                                    <FiMoreVertical
+                                                                                                        className="card-actions"
+                                                                                                        onClick={(e) => handleContextMenuClick(e, 'task', task, list.id)}
+                                                                                                    />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div className="card-meta">
+                                                                                                {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
+                                                                                                {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
+                                                                                                {task.members && <span>👤 {task.members}</span>}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    )}
+                                                                                </Draggable>
+                                                                            ))}
+                                                                            {provided.placeholder}
+                                                                        </div>
+                                                                    )}
+                                                                </Droppable>
+                                                                <button className="add-card-btn dark" onClick={() => addTaskToList(list.id)}>
+                                                                    <FiPlus /> Add a task
+                                                                </button>
                                                             </div>
                                                         )}
-                                                    </div>
-                                                </div>
-                                                <div className="list-cards">
-                                                    {list.cards.map((task, i) => (
-                                                        <div key={task.id || i} className="card" onClick={() => openTaskDetails(task)}>
-                                                            <div className="card-header">
-                                                                <span>{task.title}</span>
-                                                                <div style={{ position: 'relative' }}>
-                                                                    <FiMoreVertical
-                                                                        className="card-actions"
-                                                                        onClick={(e) => handleContextMenuClick(e, 'task', task, list.id)}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="card-meta">
-                                                                {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
-                                                                {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
-                                                                {task.members && <span>👤 {task.members}</span>}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <button className="add-card-btn dark" onClick={() => addTaskToList(list.id)}>
-                                                    <FiPlus /> Add a task
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
-                                    <button className="add-list-btn" onClick={addNewList}>
-                                        <FiPlus /> Add another list
-                                    </button>
-                                </div>
+                                                    </Draggable>
+                                                );
+                                            })}
+                                            {provided.placeholder}
+                                            <button className="add-list-btn" onClick={addNewList}>
+                                                <FiPlus /> Add another list
+                                            </button>
+                                        </div>
+                                    )}
+                                </Droppable>
                             </section>
                         ) : (
                             <section className="calendar-view">
@@ -574,472 +682,409 @@ const BoardPage = () => {
                                 <div className="week-calendar-body">
                                     <div className="week-header">
                                         <div className="time-column-header"></div>
-                                        <div className="day-header">
-                                            <div className="day-label">Sun</div>
-                                            <div className="day-number">30</div>
-                                        </div>
-                                        <div className="day-header active">
-                                            <div className="day-label">Mon</div>
-                                            <div className="day-number">1</div>
-                                        </div>
-                                        <div className="day-header">
-                                            <div className="day-label">Tue</div>
-                                            <div className="day-number">2</div>
-                                        </div>
-                                        <div className="day-header">
-                                            <div className="day-label">Wed</div>
-                                            <div className="day-number">3</div>
-                                        </div>
-                                        <div className="day-header">
-                                            <div className="day-label">Thu</div>
-                                            <div className="day-number">4</div>
-                                        </div>
-                                        <div className="day-header">
-                                            <div className="day-label">Fri</div>
-                                            <div className="day-number">5</div>
-                                        </div>
-                                        <div className="day-header">
-                                            <div className="day-label">Sat</div>
-                                            <div className="day-number">6</div>
-                                        </div>
+                                        <div className="day-header active"><div className="day-label">Mon</div><div className="day-number">1</div></div>
+                                        <div className="day-header"><div className="day-label">Tue</div><div className="day-number">2</div></div>
+                                        <div className="day-header"><div className="day-label">Wed</div><div className="day-number">3</div></div>
+                                        <div className="day-header"><div className="day-label">Thu</div><div className="day-number">4</div></div>
+                                        <div className="day-header"><div className="day-label">Fri</div><div className="day-number">5</div></div>
+                                        <div className="day-header"><div className="day-label">Sat</div><div className="day-number">6</div></div>
+                                        <div className="day-header"><div className="day-label">Sun</div><div className="day-number">7</div></div>
                                     </div>
                                     <div className="week-grid-container">
                                         <div className="time-column">
-                                            <div className="all-day-label">All day</div>
-                                            {['12 am', '1 am', '2 am', '3 am', '4 am', '5 am', '6 am', '7 am', '8 am', '9 am', '10 am', '11 am', '12 pm', '1 pm', '2 pm', '3 pm', '4 pm', '5 pm', '6 pm', '7 pm', '8 pm', '9 pm', '10 pm', '11 pm'].map((time, idx) => (
-                                                <div key={idx} className="time-label-week">{time}</div>
-                                            ))}
+                                            <div className="time-slot">9 AM</div>
+                                            <div className="time-slot">10 AM</div>
+                                            <div className="time-slot">11 AM</div>
                                         </div>
-                                        <div className="week-days-grid">
-                                            {[0, 1, 2, 3, 4, 5, 6].map((day) => (
-                                                <div key={day} className="day-column">
-                                                    <div className="all-day-cell"></div>
-                                                    {Array(24).fill(0).map((_, hour) => (
-                                                        <div key={hour} className="hour-cell">
-                                                            {day === 1 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                            {day === 2 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                            {day === 3 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                            {day === 4 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                            {day === 5 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                            {day === 6 && hour === 0 && (
-                                                                <div className="event-card-week">
-                                                                    <div className="event-title-week">Intern Call</div>
-                                                                    <div className="event-time-week">11:00pm - 1:00am</div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <div className="week-days-grid"></div>
                                     </div>
                                 </div>
                             </section>
                         )}
-                    </div>
-                </main>
+                    </main>
 
-                {/* Footer Navigation */}
-                <footer className="footer-nav">
-                    <div className={`nav-item ${isInboxOpen ? "active" : ""}`} onClick={toggleInbox}>
-                        <div className="nav-icon"><FiInbox /></div>
-                        <span>Inbox</span>
-                    </div>
-                    <div className={`nav-item ${isPlannerOpen ? "active" : ""}`} onClick={togglePlanner}>
-                        <div className="nav-icon"><FiCalendar /></div>
-                        <span>Planner</span>
-                    </div>
-                    <div className="nav-item active">
-                        <div className="nav-icon"><FiGrid /></div>
-                        <span>Board</span>
-                    </div>
-                    <div className={`nav-item ${isSwitchBoardsModalOpen ? "active" : ""}`} onClick={toggleSwitchBoards}>
-                        <div className="nav-icon"><FiLayers /></div>
-                        <span>Switch Boards</span>
-                    </div>
-                </footer>
-            </div >
-
-            {/* Invisible Backdrop for closing header menus */}
-            {/* Invisible Backdrop for closing header menus AND Context Menus */}
-            {
-                (isNotificationsOpen || isProfileMenuOpen || isMenuOpen || activeListMenu || contextMenu.isOpen) && (
-                    <div
-                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998, cursor: 'default' }}
-                        onClick={() => {
-                            if (isNotificationsOpen) closeNotifications();
-                            if (isProfileMenuOpen) closeProfileMenu();
-                            if (isMenuOpen) closeMenu();
-                            if (activeListMenu) setActiveListMenu(null);
-                            if (contextMenu.isOpen) closeContextMenu();
-                        }}
-                    />
-                )
-            }
-
-            {/* Modals & Pop-ups */}
-            {
-                isFeedbackModalOpen && (
-                    <div className={`modal-overlay ${isFeedbackClosing ? 'closing' : ''}`}>
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>Share Your Thoughts</h3>
-                                <FiX className="modal-close-icon" onClick={closeFeedbackModal} />
-                            </div>
-                            <p style={{ marginBottom: '1rem', color: '#a1b0c0' }}>We'd love to hear your feedback on BoardWise.</p>
-                            <textarea placeholder="Enter your feedback here..." rows="5"></textarea>
-                            <button className="submit-btn" onClick={handleFeedbackSubmit}>Submit Feedback</button>
+                    {/* Footer Navigation */}
+                    <footer className="footer-nav">
+                        <div className={`nav-item ${isInboxOpen ? "active" : ""}`} onClick={toggleInbox}>
+                            <div className="nav-icon"><FiInbox /></div>
+                            <span>Inbox</span>
                         </div>
-                    </div>
-                )
-            }
-
-            {
-                isNotificationsOpen && (
-                    <div className={`notification-popup white ${isNotificationsClosing ? 'closing' : ''}`}>
-                        <div className="notification-header">
-                            <h3>Notifications</h3>
-                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.8rem', color: '#4452FE', cursor: 'pointer' }} onClick={handleClearNotifications}>Clear All</span>
-                                <FiX className="modal-close-icon" onClick={closeNotifications} />
-                            </div>
+                        <div className={`nav-item ${isPlannerOpen ? "active" : ""}`} onClick={togglePlanner}>
+                            <div className="nav-icon"><FiCalendar /></div>
+                            <span>Planner</span>
                         </div>
-                        {notifications.length === 0 ? (
-                            <div style={{ padding: '1rem', textAlign: 'center', color: '#a1b0c0' }}>No new notifications</div>
-                        ) : (
-                            notifications.map(notif => (
-                                <div key={notif.id} className="notification-item" onClick={() => alert("Notification clicked")}>
-                                    {notif.text}
+                        <div className="nav-item active">
+                            <div className="nav-icon"><FiGrid /></div>
+                            <span>Board</span>
+                        </div>
+                        <div className={`nav-item ${isSwitchBoardsModalOpen ? "active" : ""}`} onClick={toggleSwitchBoards}>
+                            <div className="nav-icon"><FiLayers /></div>
+                            <span>Switch Boards</span>
+                        </div>
+                    </footer>
+                </div>
+
+                {/* Invisible Backdrop for closing header menus */}
+                {
+                    (isNotificationsOpen || isProfileMenuOpen || isMenuOpen || activeListMenu || contextMenu.isOpen) && (
+                        <div
+                            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998, cursor: 'default' }}
+                            onClick={() => {
+                                if (isNotificationsOpen) closeNotifications();
+                                if (isProfileMenuOpen) closeProfileMenu();
+                                if (isMenuOpen) closeMenu();
+                                if (activeListMenu) setActiveListMenu(null);
+                                if (contextMenu.isOpen) closeContextMenu();
+                            }}
+                        />
+                    )
+                }
+
+                {/* Modals & Pop-ups */}
+                {
+                    isFeedbackModalOpen && (
+                        <div className={`modal-overlay ${isFeedbackClosing ? 'closing' : ''}`}>
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Share Your Thoughts</h3>
+                                    <FiX className="modal-close-icon" onClick={closeFeedbackModal} />
                                 </div>
-                            ))
-                        )}
-                    </div>
-                )
-            }
-
-            {
-                isProfileMenuOpen && (
-                    <div className={`profile-menu-popup white ${isProfileMenuClosing ? 'closing' : ''}`}>
-                        <div className="profile-header">
-                            <h3>Account</h3>
-                            <FiX className="modal-close-icon" onClick={closeProfileMenu} />
+                                <p style={{ marginBottom: '1rem', color: '#a1b0c0' }}>We'd love to hear your feedback on BoardWise.</p>
+                                <textarea placeholder="Enter your feedback here..." rows="5"></textarea>
+                                <button className="submit-btn" onClick={handleFeedbackSubmit}>Submit Feedback</button>
+                            </div>
                         </div>
-                        <div className="user-info-section" style={{ paddingBottom: '1rem', marginBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                <div className="avatar large" style={{ width: '40px', height: '40px', fontSize: '1rem' }}>JY</div>
-                                <div>
-                                    <div style={{ fontWeight: '600', color: '#fff' }}>Jhon Year</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#9fadbc' }}>jhon.year@example.com</div>
+                    )
+                }
+
+                {
+                    isNotificationsOpen && (
+                        <div className={`notification-popup white ${isNotificationsClosing ? 'closing' : ''}`}>
+                            <div className="notification-header">
+                                <h3>Notifications</h3>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '0.8rem', color: '#4452FE', cursor: 'pointer' }} onClick={handleClearNotifications}>Clear All</span>
+                                    <FiX className="modal-close-icon" onClick={closeNotifications} />
                                 </div>
                             </div>
-                        </div>
-                        <div className="menu-item" onClick={() => handleProfileOption("Switch Account")}>Switch Account</div>
-                        <div className="menu-item" onClick={() => handleProfileOption("Manage Account")}>Manage Account</div>
-                        <div className="menu-item" onClick={() => handleProfileOption("Settings")}>Settings</div>
-                        <div className="menu-item" onClick={() => handleProfileOption("Help")}>Help</div>
-                        <div className="menu-item" onClick={() => handleProfileOption("Theme")}>Theme</div>
-                        <div className="menu-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '0.5rem' }} onClick={() => handleProfileOption("Log Out")}>Log Out</div>
-                    </div>
-                )
-            }
-
-            {
-                isVisibilityModalOpen && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>Change Visibility</h3>
-                                <FiX className="modal-close-icon" onClick={() => setIsVisibilityModalOpen(false)} />
-                            </div>
-                            <div className="visibility-option private" onClick={() => handleVisibilityOptionClick('Private')}>
-                                <h4>Private</h4>
-                                <p>Only board members can see this board.</p>
-                            </div>
-                            <div className="visibility-option workspace" onClick={() => handleVisibilityOptionClick('Workspace')}>
-                                <h4>Workspace</h4>
-                                <p>All members of the Trello Workspace can see and edit this board.</p>
-                            </div>
-                            <div className="visibility-option organization" onClick={() => handleVisibilityOptionClick('Organization')}>
-                                <h4>Organization</h4>
-                                <p>All members of the organization can see this board.</p>
-                            </div>
-                            <div className="visibility-option public" onClick={() => handleVisibilityOptionClick('Public')}>
-                                <h4>Public</h4>
-                                <p>Anyone on the internet can see this board.</p>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {
-                isShareModalOpen && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>Share board</h3>
-                                <FiX className="modal-close-icon" onClick={() => setIsShareModalOpen(false)} />
-                            </div>
-                            <input type="text" placeholder="Email address or name" className="share-input" />
-                            <button className="share-button-action">Share</button>
-                            <div className="share-link-section">
-                                <FiLink2 /> Share this board with a link
-                                <a href="#">Create link</a>
-                            </div>
-                            <div className="board-members">
-                                Board members <span>1</span>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {
-                isMenuOpen && (
-                    <div className={`menu-popup white ${isMenuClosing ? 'closing' : ''}`}>
-                        <div className="modal-header">
-                            <h3>Menu</h3>
-                            <FiX className="modal-close-icon" onClick={closeMenu} />
-                        </div>
-                        <div className="menu-item-with-icon"><FiShare2 /> Share</div>
-                        <div className="menu-item-with-icon"><FiInfo /> About this board</div>
-                        <div className="menu-item-with-icon"><FiUsers /> Visibility: Workspace</div>
-                        <div className="menu-item-with-icon"><FiStar /> Star</div>
-                        <div className="menu-item-with-icon"><FiSettings /> Settings</div>
-                        <div className="menu-item-with-icon"><FiImage /> Change background</div>
-                    </div>
-                )
-            }
-
-
-
-            {
-                isSwitchBoardsModalOpen && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>Switch boards</h3>
-                                <FiX className="modal-close-icon" onClick={() => setIsSwitchBoardsModalOpen(false)} />
-                            </div>
-                            <div className="search-box-modal">
-                                <FiSearch />
-                                <input type="text" placeholder="Search your boards" />
-                            </div>
-                            <div className="board-list-modal">
-                                <div className="board-thumb all-boards">All</div>
-                                <div className="board-thumb recent-boards">Trello Workspace</div>
-                            </div>
-                            <div className="recent-boards-section">
-                                <h4>Recent</h4>
-                                <div className="board-thumbnails">
-                                    <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-1.png'})` }}>
-                                        <p>My Trello board</p>
+                            {notifications.length === 0 ? (
+                                <div style={{ padding: '1rem', textAlign: 'center', color: '#a1b0c0' }}>No new notifications</div>
+                            ) : (
+                                notifications.map(notif => (
+                                    <div key={notif.id} className="notification-item" onClick={() => alert("Notification clicked")}>
+                                        {notif.text}
                                     </div>
-                                    <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-2.png'})` }}>
-                                        <p>learn</p>
-                                    </div>
-                                    <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-3.png'})` }}>
-                                        <p>jnfjdj</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {/* Add Item Modal */}
-            {
-                addItemModal.isOpen && (
-                    <div className={`modal-overlay ${addItemModal.isClosing ? 'closing' : ''}`}>
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h3>
-                                    {(addItemModal.type === 'list' || addItemModal.type === 'edit-list') && (addItemModal.type === 'edit-list' ? "Edit List" : "Add Another List")}
-                                    {(addItemModal.type === 'task' || addItemModal.type === 'edit-task') && (addItemModal.type === 'edit-task' ? "Edit Task" : "Create New Task")}
-                                    {addItemModal.type === 'inbox' && "Add to Inbox"}
-                                </h3>
-                                <FiX className="modal-close-icon" onClick={closeAddItemModal} />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Title</label>
-                                <input
-                                    type="text"
-                                    className="share-input"
-                                    autoFocus
-                                    placeholder={addItemModal.type.includes('list') ? "Enter list title..." : "Task title"}
-                                    value={newItemText}
-                                    onChange={(e) => setNewItemText(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && addItemModal.type.includes('list') && handleAddItemSubmit()}
-                                />
-                            </div>
-
-                            {(addItemModal.type === 'task' || addItemModal.type === 'edit-task' || addItemModal.type === 'inbox') && (
-                                <>
-                                    <div className="form-group">
-                                        <label>Description</label>
-                                        <textarea
-                                            rows="3"
-                                            placeholder="Add a more detailed description..."
-                                            value={newItemDesc}
-                                            onChange={(e) => setNewItemDesc(e.target.value)}
-                                        ></textarea>
-                                    </div>
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label>Members</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Add members encoded..."
-                                                value={newItemMembers}
-                                                onChange={(e) => setNewItemMembers(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Due Date</label>
-                                            <input
-                                                type="date"
-                                                value={newItemDate}
-                                                onChange={(e) => setNewItemDate(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Priority</label>
-                                        <select
-                                            value={newItemPriority}
-                                            onChange={(e) => setNewItemPriority(e.target.value)}
-                                        >
-                                            <option value="Low">Low</option>
-                                            <option value="Medium">Medium</option>
-                                            <option value="High">High</option>
-                                        </select>
-                                    </div>
-                                </>
+                                ))
                             )}
-
-                            <button className="submit-btn" onClick={handleAddItemSubmit}>
-                                {addItemModal.type.includes('list') ? (addItemModal.type === 'edit-list' ? "Save List" : "Add List") : (addItemModal.type.includes('edit') ? "Save Task" : "Create Task")}
-                            </button>
                         </div>
-                    </div>
-                )
-            }
+                    )
+                }
 
-            {
-                contextMenu.isOpen && contextMenu.type === 'task' && (
-                    <div
-                        className="context-menu"
-                        style={{
-                            position: 'fixed',
-                            top: contextMenu.y,
-                            left: contextMenu.x,
-                            zIndex: 10001
-                        }}
-                    >
-                        <div className="context-menu-item" onClick={(e) => { e.stopPropagation(); openEditTaskModal(contextMenu.item, contextMenu.listId); }}>Edit Task</div>
-                        <div className="context-menu-item delete" onClick={(e) => { e.stopPropagation(); deleteTask(contextMenu.listId, contextMenu.id); }}>Delete</div>
-                    </div>
-                )
-            }
+                {
+                    isProfileMenuOpen && (
+                        <div className={`profile-menu-popup white ${isProfileMenuClosing ? 'closing' : ''}`}>
+                            <div className="profile-header">
+                                <h3>Account</h3>
+                                <FiX className="modal-close-icon" onClick={closeProfileMenu} />
+                            </div>
+                            <div className="user-info-section" style={{ paddingBottom: '1rem', marginBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                    <div className="avatar large" style={{ width: '40px', height: '40px', fontSize: '1rem' }}>JY</div>
+                                    <div>
+                                        <div style={{ fontWeight: '600', color: '#fff' }}>Jhon Year</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#9fadbc' }}>jhon.year@example.com</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="menu-item" onClick={() => handleProfileOption("Switch Account")}>Switch Account</div>
+                            <div className="menu-item" onClick={() => handleProfileOption("Manage Account")}>Manage Account</div>
+                            <div className="menu-item" onClick={() => handleProfileOption("Settings")}>Settings</div>
+                            <div className="menu-item" onClick={() => handleProfileOption("Help")}>Help</div>
+                            <div className="menu-item theme-option" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span>Theme</span>
+                                <ThemeToggleButton onClick={toggleTheme}>
+                                    {theme === 'light' ? <FiMoon size={18} /> : <FiSun size={18} />}
+                                    {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                                </ThemeToggleButton>
+                            </div>
+                            <div className="menu-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '0.5rem' }} onClick={() => handleProfileOption("Log Out")}>Log Out</div>
+                        </div>
+                    )
+                }
 
-            {/* Task Details Modal */}
-            {
-                viewTaskModal.isOpen && viewTaskModal.task && (
-                    <div className={`modal-overlay ${viewTaskModal.isClosing ? 'closing' : ''}`}>
-                        <div className="modal-content" style={{ maxWidth: '600px' }}>
+                {
+                    isVisibilityModalOpen && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Change Visibility</h3>
+                                    <FiX className="modal-close-icon" onClick={() => setIsVisibilityModalOpen(false)} />
+                                </div>
+                                <div className="visibility-option private" onClick={() => handleVisibilityOptionClick('Private')}>
+                                    <h4>Private</h4>
+                                    <p>Only board members can see this board.</p>
+                                </div>
+                                <div className="visibility-option workspace" onClick={() => handleVisibilityOptionClick('Workspace')}>
+                                    <h4>Workspace</h4>
+                                    <p>All members of the Trello Workspace can see and edit this board.</p>
+                                </div>
+                                <div className="visibility-option organization" onClick={() => handleVisibilityOptionClick('Organization')}>
+                                    <h4>Organization</h4>
+                                    <p>All members of the organization can see this board.</p>
+                                </div>
+                                <div className="visibility-option public" onClick={() => handleVisibilityOptionClick('Public')}>
+                                    <h4>Public</h4>
+                                    <p>Anyone on the internet can see this board.</p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                {
+                    isShareModalOpen && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Share board</h3>
+                                    <FiX className="modal-close-icon" onClick={() => setIsShareModalOpen(false)} />
+                                </div>
+                                <input type="text" placeholder="Email address or name" className="share-input" />
+                                <button className="share-button-action">Share</button>
+                                <div className="share-link-section">
+                                    <FiLink2 /> Share this board with a link
+                                    <a href="#">Create link</a>
+                                </div>
+                                <div className="board-members">
+                                    Board members <span>1</span>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                {
+                    isMenuOpen && (
+                        <div className={`menu-popup white ${isMenuClosing ? 'closing' : ''}`}>
                             <div className="modal-header">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <FiCheckSquare style={{ color: '#4452FE', fontSize: '1.2rem' }} />
-                                    <h3>{viewTaskModal.task.title}</h3>
-                                </div>
-                                <FiX className="modal-close-icon" onClick={closeTaskDetails} />
+                                <h3>Menu</h3>
+                                <FiX className="modal-close-icon" onClick={closeMenu} />
                             </div>
+                            <div className="menu-item-with-icon"><FiShare2 /> Share</div>
+                            <div className="menu-item-with-icon"><FiInfo /> About this board</div>
+                            <div className="menu-item-with-icon"><FiUsers /> Visibility: Workspace</div>
+                            <div className="menu-item-with-icon"><FiStar /> Star</div>
+                            <div className="menu-item-with-icon"><FiSettings /> Settings</div>
+                            <div className="menu-item-with-icon"><FiImage /> Change background</div>
+                        </div>
+                    )
+                }
 
-                            <div className="task-detail-row">
-                                <FiAlignLeft className="task-detail-icon" />
-                                <div className="task-detail-content">
-                                    <div className="task-detail-label">Description</div>
-                                    <div className="task-detail-value" style={{ color: '#b6c2cf', whiteSpace: 'pre-wrap' }}>
-                                        {viewTaskModal.task.description || "No description provided."}
-                                    </div>
+
+
+                {
+                    isSwitchBoardsModalOpen && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>Switch boards</h3>
+                                    <FiX className="modal-close-icon" onClick={() => setIsSwitchBoardsModalOpen(false)} />
                                 </div>
-                            </div>
-
-                            <div className="task-detail-meta">
-                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
-                                    <FiUsers className="task-detail-icon" />
-                                    <div className="task-detail-content">
-                                        <div className="task-detail-label">Members</div>
-                                        <div className="task-detail-value">{viewTaskModal.task.members || "None"}</div>
-                                    </div>
+                                <div className="search-box-modal">
+                                    <FiSearch />
+                                    <input type="text" placeholder="Search your boards" />
                                 </div>
-
-                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
-                                    <FiTag className="task-detail-icon" />
-                                    <div className="task-detail-content">
-                                        <div className="task-detail-label">Priority</div>
-                                        <div className="task-detail-value">
-                                            {viewTaskModal.task.priority &&
-                                                <span className={`badge ${viewTaskModal.task.priority.toLowerCase()}`} style={{ fontSize: '0.9rem', padding: '4px 8px' }}>
-                                                    {viewTaskModal.task.priority}
-                                                </span>
-                                            }
+                                <div className="board-list-modal">
+                                    <div className="board-thumb all-boards">All</div>
+                                    <div className="board-thumb recent-boards">Trello Workspace</div>
+                                </div>
+                                <div className="recent-boards-section">
+                                    <h4>Recent</h4>
+                                    <div className="board-thumbnails">
+                                        <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-1.png'})` }}>
+                                            <p>My Trello board</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
-                                    <FiCalendar className="task-detail-icon" />
-                                    <div className="task-detail-content">
-                                        <div className="task-detail-label">Due Date</div>
-                                        <div className="task-detail-value">
-                                            {viewTaskModal.task.dueDate ? new Date(viewTaskModal.task.dueDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : "No Date"}
+                                        <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-2.png'})` }}>
+                                            <p>learn</p>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div className="task-detail-row" style={{ marginBottom: 0 }}>
-                                    <FiClock className="task-detail-icon" />
-                                    <div className="task-detail-content">
-                                        <div className="task-detail-label">Created At</div>
-                                        <div className="task-detail-value" style={{ fontSize: '0.9rem' }}>
-                                            {viewTaskModal.task.createdAt ? new Date(viewTaskModal.task.createdAt).toLocaleString() : "Unknown"}
+                                        <div className="board-thumbnail" style={{ backgroundImage: `url(${'/board-bg-3.png'})` }}>
+                                            <p>jnfjdj</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )
-            }
-        </Wrapper >
+                    )
+                }
+
+                {/* Add Item Modal */}
+                {
+                    addItemModal.isOpen && (
+                        <div className={`modal-overlay ${addItemModal.isClosing ? 'closing' : ''}`}>
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h3>
+                                        {(addItemModal.type === 'list' || addItemModal.type === 'edit-list') && (addItemModal.type === 'edit-list' ? "Edit List" : "Add Another List")}
+                                        {(addItemModal.type === 'task' || addItemModal.type === 'edit-task') && (addItemModal.type === 'edit-task' ? "Edit Task" : "Create New Task")}
+                                        {addItemModal.type === 'inbox' && "Add to Inbox"}
+                                    </h3>
+                                    <FiX className="modal-close-icon" onClick={closeAddItemModal} />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Title</label>
+                                    <input
+                                        type="text"
+                                        className="share-input"
+                                        autoFocus
+                                        placeholder={addItemModal.type.includes('list') ? "Enter list title..." : "Task title"}
+                                        value={newItemText}
+                                        onChange={(e) => setNewItemText(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && addItemModal.type.includes('list') && handleAddItemSubmit()}
+                                    />
+                                </div>
+
+                                {(addItemModal.type === 'task' || addItemModal.type === 'edit-task' || addItemModal.type === 'inbox') && (
+                                    <>
+                                        <div className="form-group">
+                                            <label>Description</label>
+                                            <textarea
+                                                rows="3"
+                                                placeholder="Add a more detailed description..."
+                                                value={newItemDesc}
+                                                onChange={(e) => setNewItemDesc(e.target.value)}
+                                            ></textarea>
+                                        </div>
+                                        <div className="form-row">
+                                            <div className="form-group">
+                                                <label>Members</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Add members encoded..."
+                                                    value={newItemMembers}
+                                                    onChange={(e) => setNewItemMembers(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Due Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={newItemDate}
+                                                    onChange={(e) => setNewItemDate(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Priority</label>
+                                            <select
+                                                value={newItemPriority}
+                                                onChange={(e) => setNewItemPriority(e.target.value)}
+                                            >
+                                                <option value="Low">Low</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="High">High</option>
+                                            </select>
+                                        </div>
+                                    </>
+                                )}
+
+                                <button className="submit-btn" onClick={handleAddItemSubmit}>
+                                    {addItemModal.type.includes('list') ? (addItemModal.type === 'edit-list' ? "Save List" : "Add List") : (addItemModal.type.includes('edit') ? "Save Task" : "Create Task")}
+                                </button>
+                            </div>
+                        </div>
+                    )
+                }
+
+                {
+                    contextMenu.isOpen && contextMenu.type === 'task' && (
+                        <div
+                            className="context-menu"
+                            style={{
+                                position: 'fixed',
+                                top: contextMenu.y,
+                                left: contextMenu.x,
+                                zIndex: 10001
+                            }}
+                        >
+                            <div className="context-menu-item" onClick={(e) => { e.stopPropagation(); openEditTaskModal(contextMenu.item, contextMenu.listId); }}>Edit Task</div>
+                            <div className="context-menu-item delete" onClick={(e) => { e.stopPropagation(); deleteTask(contextMenu.listId, contextMenu.id); }}>Delete</div>
+                        </div>
+                    )
+                }
+
+                {/* Task Details Modal */}
+                {
+                    viewTaskModal.isOpen && viewTaskModal.task && (
+                        <div className={`modal-overlay ${viewTaskModal.isClosing ? 'closing' : ''}`}>
+                            <div className="modal-content" style={{ maxWidth: '600px' }}>
+                                <div className="modal-header">
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <FiCheckSquare style={{ color: '#4452FE', fontSize: '1.2rem' }} />
+                                        <h3>{viewTaskModal.task.title}</h3>
+                                    </div>
+                                    <FiX className="modal-close-icon" onClick={closeTaskDetails} />
+                                </div>
+
+                                <div className="task-detail-row">
+                                    <FiAlignLeft className="task-detail-icon" />
+                                    <div className="task-detail-content">
+                                        <div className="task-detail-label">Description</div>
+                                        <div className="task-detail-value" style={{ color: '#b6c2cf', whiteSpace: 'pre-wrap' }}>
+                                            {viewTaskModal.task.description || "No description provided."}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="task-detail-meta">
+                                    <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                        <FiUsers className="task-detail-icon" />
+                                        <div className="task-detail-content">
+                                            <div className="task-detail-label">Members</div>
+                                            <div className="task-detail-value">{viewTaskModal.task.members || "None"}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                        <FiTag className="task-detail-icon" />
+                                        <div className="task-detail-content">
+                                            <div className="task-detail-label">Priority</div>
+                                            <div className="task-detail-value">
+                                                {viewTaskModal.task.priority &&
+                                                    <span className={`badge ${viewTaskModal.task.priority.toLowerCase()}`} style={{ fontSize: '0.9rem', padding: '4px 8px' }}>
+                                                        {viewTaskModal.task.priority}
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                        <FiCalendar className="task-detail-icon" />
+                                        <div className="task-detail-content">
+                                            <div className="task-detail-label">Due Date</div>
+                                            <div className="task-detail-value">
+                                                {viewTaskModal.task.dueDate ? new Date(viewTaskModal.task.dueDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : "No Date"}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="task-detail-row" style={{ marginBottom: 0 }}>
+                                        <FiClock className="task-detail-icon" />
+                                        <div className="task-detail-content">
+                                            <div className="task-detail-label">Created At</div>
+                                            <div className="task-detail-value" style={{ fontSize: '0.9rem' }}>
+                                                {viewTaskModal.task.createdAt ? new Date(viewTaskModal.task.createdAt).toLocaleString() : "Unknown"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+            </Wrapper>
+        </DragDropContext>
     );
 };
 
