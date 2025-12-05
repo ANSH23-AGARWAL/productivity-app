@@ -19,6 +19,35 @@ const Wrapper = styled.div`
     align-items: center;
     justify-content: center;
     padding: 20px;
+    position: relative; /* For back button */
+  }
+
+  /* ✅ Back Button */
+  .back-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px; /* Positioned to the right as requested or keep it left within the right panel? User said "in right side div not on image side", typically back button is top-left of the container or top-right. Let's stick to consistent top-left of the right panel usually, but user said "back botton in signup and login component same like aboutus". AboutUs has it top-left. So I will put it top-left of the right panel. */
+    left: 20px;  /* Putting it on the left side of the right panel */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    width : 100px
+  }
+
+  .back-btn:hover {
+    background: rgba(68, 82, 254, 0.8);
+    transform: scale(1.05);
   }
 
   /* ✅ Glassmorphism Box */
