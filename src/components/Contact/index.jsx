@@ -1,15 +1,23 @@
 import React from 'react';
 import Wrapper from './style';
 
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
+
 const Contact = () => {
+  const navigate = useNavigate();
+
   return (
     <Wrapper>
       <div className="contact-bg">
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <FiArrowLeft /> Back
+        </button>
         <div className="contact-container">
           <h1 className="contact-heading-gradient">Get in Touch</h1>
           <div className="contact-content">
             <div className="contact-info">
-              <h2 className="section-heading">Get in Touch</h2>
+              {/* <h2 className="section-heading">Get in Touch</h2> */}
               <p>We’d love to hear from you.<br />Whether it’s query, feedback, or collaboration idea – drop us a message!</p>
               <div className="contact-detail"><span className="contact-icon">✉️</span> official.boardwise@gmail.com</div>
               <div className="contact-detail"><span className="contact-icon">📍</span> Jaipur, Rajasthan, India</div>
@@ -40,7 +48,7 @@ const Contact = () => {
               <label>Message
                 <textarea name="message" rows={4} placeholder="Your Message" required />
               </label>
-              <button  type="submit">Send Message</button>
+              <button type="submit">Send Message</button>
             </form>
           </div>
         </div>

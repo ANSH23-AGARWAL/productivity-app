@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Wrapper from './style';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { FiArrowLeft } from 'react-icons/fi';
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +35,9 @@ const SignIn = () => {
         <div className="left-panel" />
 
         <div className="right-panel">
+          <button className="back-btn" onClick={() => navigate(-1)}>
+            <FiArrowLeft /> Back
+          </button>
           <div className="signin-box">
             <h2>Sign In</h2>
 

@@ -146,19 +146,20 @@ const Wrapper = styled.div`
 
 .header-bar {
   width: 80%;
-  margin: 24px auto 0;
+  margin: 16px auto 0;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 40px; /* spacing between items */
-  padding: 20px 32px;
-  font-size: 1.2rem;
+  padding: 12px 32px;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #fff;
-  background: rgba(10, 15, 31, 0.85);
-  backdrop-filter: blur(16px);
-  border-radius: 24px;
+  background: rgba(10, 15, 31, 0.75);
+  backdrop-filter: blur(20px);
+  border-radius: 50px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .header-bar .nav-link,
@@ -233,15 +234,10 @@ const Wrapper = styled.div`
   font-weight: 800;
   background: linear-gradient(
     270deg,
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     #4452FE,
     #2FAFCC,
     #9B5CFF,
     #4452FE
-  );
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

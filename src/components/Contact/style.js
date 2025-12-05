@@ -3,21 +3,74 @@ import styled from 'styled-components';
 const Wrapper = styled.div`
   /* 🔹 Main background for contact page */
   .contact-bg {
-    background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
+    background: #0A0F1F;
     min-height: 100vh;
     width: 100vw;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding: 0;
+    align-items: center; /* keep vertical center as it looks premium */
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ✅ Ambient Background Gradient (Hero Effect) */
+  .contact-bg::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 30% 60%, #1a2542 0%, #0A0F1F 75%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Ensure content is above background */
+  .contact-container {
+    position: relative;
+    z-index: 1;
+
+  /* ✅ Back Button */
+  .back-btn {
+    position: fixed !important;
+    top: 30px !important;
+    left: 30px !important;
+    z-index: 100000 !important;
+    background: rgba(255, 255, 255, 0.15); /* Slightly more visible */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+    z-index: 100; /* Ensure on top of everything */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: #00ffd0;
+    color: #00ffd0;
+    transform: translateX(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   }
 
   /* 🔹 Container for all contact content */
   .contact-container {
     width: 100%;
-    max-width: 950px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 64px 24px 48px 24px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.03); /* subtle glass card for the whole container */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   /* 🔹 Page heading gradient text */
@@ -35,19 +88,20 @@ const Wrapper = styled.div`
   }
 
   /* 🔹 Layout for left (info) and right (form) sections */
+  /* 🔹 Layout for left (info) and right (form) sections */
   .contact-content {
     display: flex;
-    gap: 48px;
-    align-items: flex-start;
+    flex-direction: row;
+    gap: 40px;
+    align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
+    width: 100%;
   }
 
   /* 🔹 Left side - contact info */
   .contact-info {
-    flex: 1 1 320px;
-    min-width: 280px;
-    max-width: 350px;
+    flex: 1;
+    min-width: 300px;
   }
 
   .section-heading {
@@ -109,9 +163,9 @@ const Wrapper = styled.div`
 
   /* 🔹 Contact form (right side) */
   .contact-form {
-    flex: 1 1 340px;
+    flex: 1;
     min-width: 300px;
-    max-width: 400px;
+    max-width: 500px;
     background: rgba(26, 53, 87, 0.4);
     backdrop-filter: blur(10px);
     border: 1.5px solid rgba(58, 76, 110, 0.6);
@@ -191,7 +245,7 @@ const Wrapper = styled.div`
   }
 
   /* 🔹 Responsive styles */
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .contact-content {
       flex-direction: column;
       gap: 32px;

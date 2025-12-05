@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
 
-  /* ✅ Background with soft gradient */
-   background: linear-gradient(145deg, #0a1e46, #132f62, #1d427a);
+   /* ✅ Background with proper theme color */
+   background: #0A0F1F;
   min-height: 100vh;
   width: 100vw;
   font-family: 'Inter', 'Segoe UI', sans-serif;
@@ -11,6 +11,52 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+
+  /* ✅ Ambient Background Gradient (Hero Effect) */
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: radial-gradient(circle at 60% 40%, #1a2542 0%, #0A0F1F 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  /* Ensure content is above background */
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ✅ Back Button */
+  .back-btn {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
 
   /* ✅ Glass Effect Main Container */
   .about-container {

@@ -15,10 +15,35 @@ const Wrapper = styled.div`
   .right-panel {
     flex: 1;
     background: #0A0F1F;
+    background: radial-gradient(circle at 90% 10%, #151b30 0%, #0A0F1F 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    position: relative;
+  }
+
+  /* ✅ Back Button */
+  .back-btn {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .back-btn:hover {
+    color: #4452FE;
+    transform: translateX(-5px);
   }
 
   /* ✅ Glassmorphism Box */
