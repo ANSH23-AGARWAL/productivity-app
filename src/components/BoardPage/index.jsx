@@ -20,6 +20,7 @@ const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:30
 const UPDATE_BOARD_ENDPOINT = '/boards/update';
 const DELETE_BOARD_ENDPOINT = '/boards/delete';
 const LISTS_ENDPOINT = '/lists';
+const TASKS_ENDPOINT = '/tasks';
 const CREATE_BOARD_ENDPOINT = '/boards/create';
 
 const DEFAULT_LIST_NAME = 'Today Task';
@@ -36,13 +37,54 @@ const DEFAULT_USER_SETTINGS = Object.freeze({
 });
 
 const getListId = (listLike) => listLike?._id || listLike?.listId || listLike?.id;
+const getUserId = (userLike) => userLike?.userId || userLike?._id || userLike?.id;
 
-const normalizeListPayload = (listPayload, fallbackTitle) => ({
-    id: (getListId(listPayload) || `temp-list-${Date.now()}`).toString(),
-    title: listPayload?.title || fallbackTitle || 'Untitled List',
-    cards: Array.isArray(listPayload?.cards) ? listPayload.cards : [],
-    position: typeof listPayload?.position === 'number' ? listPayload.position : null,
-});
+const normalizeListPayload = (listPayload, fallbackTitle) => {
+    const resolvedId = (getListId(listPayload) || `temp-list-${Date.now()}`).toString();
+    const normalizedCards = Array.isArray(listPayload?.cards)
+        ? listPayload.cards.map((card) => normalizeTaskPayload(card, card?.title))
+        : [];
+    return {
+        id: resolvedId,
+        _id: resolvedId,
+        title: listPayload?.title || fallbackTitle || 'Untitled List',
+        cards: normalizedCards,
+        position: typeof listPayload?.position === 'number' ? listPayload.position : null,
+    };
+};
+
+const normalizeMemberIds = (membersInput) => {
+    if (Array.isArray(membersInput)) {
+        return membersInput
+            .map((member) => (typeof member === 'object' ? getUserId(member) : member))
+            .filter(Boolean)
+            .map((id) => id.toString());
+    }
+    if (typeof membersInput === 'string') {
+        return membersInput
+            .split(/[,\s]+/)
+            .map((part) => part.trim())
+            .filter(Boolean)
+            .map((id) => id.toString());
+    }
+    return [];
+};
+
+const normalizeTaskPayload = (taskPayload = {}, fallbackTitle) => {
+    const resolvedId = (taskPayload?._id || taskPayload?.id || `temp-task-${Date.now()}`).toString();
+    return {
+        id: resolvedId,
+        _id: resolvedId,
+        title: taskPayload?.title || fallbackTitle || 'Untitled Task',
+        description: taskPayload?.description || '',
+        members: normalizeMemberIds(taskPayload?.members),
+        priority: taskPayload?.priority || 'Medium',
+        dueDate: taskPayload?.dueDate || '',
+        createdAt: taskPayload?.createdAt || new Date().toISOString(),
+        listid: taskPayload?.listid || taskPayload?.listId || taskPayload?.list_id || '',
+        boardid: taskPayload?.boardid || taskPayload?.boardId || taskPayload?.board_id || '',
+    };
+};
 
 const buildDefaultTodayTasks = () => {
     const now = new Date();
@@ -113,6 +155,14 @@ const markDefaultListSynced = (boardId) => {
 };
 
 const getBoardId = (boardLike) => boardLike?.boardId || boardLike?._id || boardLike?.id;
+
+const buildBoardIdentifiers = (boardId) => {
+    if (!boardId) return {};
+    return {
+        boardid: boardId,
+        boardId,
+    };
+};
 
 const readTrashedBoardIds = () => {
     if (typeof window === 'undefined') return new Set();
@@ -305,13 +355,14 @@ const BoardPage = () => {
     // Task Form State
     const [newItemText, setNewItemText] = useState("");
     const [newItemDesc, setNewItemDesc] = useState("");
-    const [newItemMembers, setNewItemMembers] = useState("");
+    const [newItemMembers, setNewItemMembers] = useState([]);
     const [newItemDate, setNewItemDate] = useState("");
     const [newItemPriority, setNewItemPriority] = useState("Medium");
 
     const isTempListId = (listId) => !listId || listId.toString().startsWith('temp-');
     const replaceListInState = (listId, updater) => {
-        setLists((prev) => prev.map((list) => (list.id === listId ? updater(list) : list)));
+        const targetId = listId ? listId.toString() : '';
+        setLists((prev) => prev.map((list) => (getListId(list)?.toString() === targetId ? updater(list) : list)));
     };
 
     const userEmail = useMemo(() => getUserEmailAddress(authUser), [authUser]);
@@ -321,6 +372,53 @@ const BoardPage = () => {
         [authUser, userNameParts]
     );
     const userInitials = useMemo(() => buildUserInitials(userNameParts, userEmail), [userNameParts, userEmail]);
+
+    const boardMemberOptions = useMemo(() => {
+        const optionsMap = new Map();
+        const addMember = (memberLike) => {
+            const id = getUserId(memberLike);
+            if (!id) return;
+            const label =
+                memberLike?.name ||
+                memberLike?.fullName ||
+                memberLike?.username ||
+                memberLike?.email ||
+                memberLike?.title ||
+                id;
+            const resolvedId = id.toString();
+            if (!optionsMap.has(resolvedId)) {
+                optionsMap.set(resolvedId, { id: resolvedId, label });
+            }
+        };
+
+        const membersFromBoard = Array.isArray(boardDetails?.members) ? boardDetails.members : [];
+        membersFromBoard.forEach(addMember);
+
+        const memberIds = Array.isArray(boardDetails?.memberIds) ? boardDetails.memberIds : [];
+        memberIds.forEach((id) => addMember({ id }));
+
+        if (boardDetails?.owner) {
+            addMember(boardDetails.owner);
+        }
+        if (boardDetails?.ownerId) {
+            addMember({ id: boardDetails.ownerId, name: 'Board Owner' });
+        }
+
+        return Array.from(optionsMap.values());
+    }, [boardDetails]);
+
+    const memberLabelMap = useMemo(() => {
+        const map = new Map();
+        boardMemberOptions.forEach(({ id, label }) => map.set(id?.toString(), label));
+        return map;
+    }, [boardMemberOptions]);
+
+    const formatMembersDisplay = (membersValue) => {
+        const normalized = normalizeMemberIds(membersValue);
+        if (!normalized.length) return '';
+        const labels = normalized.map((id) => memberLabelMap.get(id) || id);
+        return labels.join(', ');
+    };
 
 
     const hydrateBoard = useCallback((board) => {
@@ -463,8 +561,16 @@ const BoardPage = () => {
                         return aPos - bPos;
                     });
 
-                if (normalizedLists.length) {
-                    setLists(normalizedLists);
+                const listsWithTasks = await Promise.all(
+                    normalizedLists.map(async (list) => {
+                        if (isTempListId(list.id)) return list;
+                        const tasks = await fetchTasksForList(list.id);
+                        return { ...list, cards: tasks.length ? tasks : list.cards };
+                    })
+                );
+
+                if (listsWithTasks.length) {
+                    setLists(listsWithTasks);
                 } else {
                     setLists([buildDefaultList()]);
                 }
@@ -730,19 +836,16 @@ const BoardPage = () => {
     };
 
     const updateListOnServer = async (listId, payload = {}) => {
-        if (!listId) {
+        const resolvedId = listId ? listId.toString() : '';
+        if (!resolvedId) {
             notifyError('Unable to update list without a valid id.');
             return null;
         }
-        const requestBody = {
-            ...payload,
-        };
-        if (activeBoardId && requestBody.boardid === undefined && requestBody.boardId === undefined) {
-            requestBody.boardid = activeBoardId;
-        }
+        console.info('[BoardPage] Updating list', { listId: resolvedId, payload });
+        const requestBody = { ...payload };
         try {
             const response = await axios.put(
-                `${API_BASE_URL}${LISTS_ENDPOINT}/${listId}`,
+                `${API_BASE_URL}${LISTS_ENDPOINT}/${resolvedId}`,
                 requestBody,
                 {
                     headers: { 'Content-Type': 'application/json' },
@@ -750,29 +853,143 @@ const BoardPage = () => {
                 }
             );
             notifySuccess(response?.data?.message || 'List updated');
-            return normalizeListPayload(response?.data?.list || { ...payload, _id: listId }, payload?.title);
+            return normalizeListPayload(response?.data?.list || { ...payload, _id: resolvedId }, payload?.title);
         } catch (error) {
-            notifyError(error.response?.data?.message || 'Failed to update list');
-            console.error('Update list error:', error);
+            const message = error.response?.data?.message || error.message || 'Failed to update list';
+            notifyError(message);
+            console.error('Update list error:', { message, error, status: error.response?.status, data: error.response?.data });
             return null;
         }
     };
 
     const deleteListOnServer = async (listId) => {
-        if (!listId) {
+        const resolvedId = listId ? listId.toString() : '';
+        if (!resolvedId) {
             notifyError('Unable to delete list without a valid id.');
             return false;
         }
+        console.info('[BoardPage] Deleting list', { listId: resolvedId });
         try {
-            await axios.delete(`${API_BASE_URL}${LISTS_ENDPOINT}/${listId}`, {
+            await axios.delete(`${API_BASE_URL}${LISTS_ENDPOINT}/${resolvedId}`, {
                 headers: { 'Content-Type': 'application/json' },
                 timeout: 10000,
             });
             notifySuccess('List deleted successfully');
             return true;
         } catch (error) {
-            notifyError(error.response?.data?.message || 'Failed to delete list');
-            console.error('Delete list error:', error);
+            const message = error.response?.data?.message || error.message || 'Failed to delete list';
+            notifyError(message);
+            console.error('Delete list error:', { message, error, status: error.response?.status, data: error.response?.data });
+            return false;
+        }
+    };
+
+    const fetchTasksForList = async (listId) => {
+        const resolvedId = listId ? listId.toString() : '';
+        if (!resolvedId) return [];
+        try {
+            const response = await axios.get(`${API_BASE_URL}${TASKS_ENDPOINT}/list/${resolvedId}`, {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 10000,
+            });
+            const tasks = Array.isArray(response?.data?.tasks) ? response.data.tasks : [];
+            return tasks.map((task) => normalizeTaskPayload(task, task?.title));
+        } catch (error) {
+            console.error('Fetch tasks for list error:', { listId: resolvedId, error, status: error.response?.status, data: error.response?.data });
+            return [];
+        }
+    };
+
+    const createTaskOnServer = async (taskPayload) => {
+        const payload = {
+            ...taskPayload,
+            title: taskPayload?.title,
+            description: taskPayload?.description || '',
+            listid: taskPayload?.listid ? taskPayload.listid.toString() : '',
+            boardid: taskPayload?.boardid ? taskPayload.boardid.toString() : '',
+            priority: taskPayload?.priority || 'Medium',
+            dueDate: taskPayload?.dueDate || '',
+            members: normalizeMemberIds(taskPayload?.members),
+        };
+
+        if (!payload.title) {
+            notifyError('Task title is required.');
+            return null;
+        }
+        if (!payload.listid || !payload.boardid) {
+            notifyError('Missing list or board id for task creation.');
+            return null;
+        }
+
+        console.info('[BoardPage] Creating task', payload);
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}${TASKS_ENDPOINT}`,
+                payload,
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000,
+                }
+            );
+            notifySuccess(response?.data?.message || 'Task created');
+            return normalizeTaskPayload(response?.data?.task || payload, payload.title);
+        } catch (error) {
+            const message = error.response?.data?.message || error.message || 'Failed to create task';
+            notifyError(message);
+            console.error('Create task error:', { message, error, status: error.response?.status, data: error.response?.data });
+            return null;
+        }
+    };
+
+    const updateTaskOnServer = async (taskId, payload = {}) => {
+        const resolvedId = taskId ? taskId.toString() : '';
+        if (!resolvedId) {
+            notifyError('Unable to update task without a valid id.');
+            return null;
+        }
+
+        const requestBody = {
+            ...payload,
+            members: payload?.members ? normalizeMemberIds(payload.members) : undefined,
+        };
+
+        console.info('[BoardPage] Updating task', { taskId: resolvedId, requestBody });
+        try {
+            const response = await axios.put(
+                `${API_BASE_URL}${TASKS_ENDPOINT}/${resolvedId}`,
+                requestBody,
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000,
+                }
+            );
+            notifySuccess(response?.data?.message || 'Task updated');
+            return normalizeTaskPayload(response?.data?.task || { ...payload, _id: resolvedId });
+        } catch (error) {
+            const message = error.response?.data?.message || error.message || 'Failed to update task';
+            notifyError(message);
+            console.error('Update task error:', { message, error, status: error.response?.status, data: error.response?.data });
+            return null;
+        }
+    };
+
+    const deleteTaskOnServer = async (taskId) => {
+        const resolvedId = taskId ? taskId.toString() : '';
+        if (!resolvedId) {
+            notifyError('Unable to delete task without a valid id.');
+            return false;
+        }
+        try {
+            await axios.delete(`${API_BASE_URL}${TASKS_ENDPOINT}/${resolvedId}`, {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 10000,
+            });
+            notifySuccess('Task deleted successfully');
+            return true;
+        } catch (error) {
+            const message = error.response?.data?.message || error.message || 'Failed to delete task';
+            notifyError(message);
+            console.error('Delete task error:', { message, error, status: error.response?.status, data: error.response?.data });
             return false;
         }
     };
@@ -783,7 +1000,7 @@ const BoardPage = () => {
             setAddItemModal({ isOpen: false, isClosing: false, type: null, listId: null, editId: null });
             setNewItemText("");
             setNewItemDesc("");
-            setNewItemMembers("");
+            setNewItemMembers([]);
             setNewItemDate("");
             setNewItemPriority("Medium");
         }, 200);
@@ -796,6 +1013,8 @@ const BoardPage = () => {
             return;
         }
 
+        const normalizedMembers = normalizeMemberIds(newItemMembers);
+
         if (addItemModal.type === 'list') {
             const createdList = await createListOnServer(trimmedTitle);
             if (createdList) {
@@ -806,17 +1025,18 @@ const BoardPage = () => {
         }
 
         if (addItemModal.type === 'edit-list') {
-            const targetList = lists.find((list) => list.id === addItemModal.editId);
+            const resolvedEditId = addItemModal.editId ? addItemModal.editId.toString() : '';
+            const targetList = lists.find((list) => getListId(list)?.toString() === resolvedEditId);
             if (!targetList) {
                 notifyError('List not found. Please refresh and try again.');
                 closeAddItemModal();
                 return;
             }
 
-            if (isTempListId(targetList.id)) {
+            if (isTempListId(getListId(targetList))) {
                 const createdList = await createListOnServer(trimmedTitle);
                 if (createdList) {
-                    replaceListInState(targetList.id, (prevList) => ({
+                    replaceListInState(getListId(targetList), (prevList) => ({
                         ...prevList,
                         ...createdList,
                         id: createdList.id,
@@ -829,9 +1049,10 @@ const BoardPage = () => {
                 return;
             }
 
-            const updatedList = await updateListOnServer(targetList.id, { title: trimmedTitle });
+            console.info('[BoardPage] Submitting list update', { listId: getListId(targetList), title: trimmedTitle });
+            const updatedList = await updateListOnServer(getListId(targetList), { title: trimmedTitle });
             if (updatedList) {
-                replaceListInState(targetList.id, (prevList) => ({
+                replaceListInState(getListId(targetList), (prevList) => ({
                     ...prevList,
                     title: updatedList.title || trimmedTitle,
                 }));
@@ -842,21 +1063,33 @@ const BoardPage = () => {
         }
 
         if (addItemModal.type === 'task') {
-            const newTask = {
-                id: Date.now(),
+            const resolvedListId = addItemModal.listId ? addItemModal.listId.toString() : '';
+            if (!resolvedListId || !activeBoardId) {
+                notifyError('Missing list or board id for task creation.');
+                return;
+            }
+
+            const createdTask = await createTaskOnServer({
                 title: trimmedTitle,
                 description: newItemDesc,
-                members: newItemMembers,
-                dueDate: newItemDate,
+                listid: resolvedListId,
+                boardid: activeBoardId,
                 priority: newItemPriority,
-                createdAt: new Date().toISOString()
-            };
-            setLists((prev) =>
-                prev.map((list) =>
-                    list.id === addItemModal.listId ? { ...list, cards: [...list.cards, newTask] } : list
-                )
-            );
-            closeAddItemModal();
+                dueDate: newItemDate,
+                members: normalizedMembers,
+            });
+
+            if (createdTask) {
+                setLists((prev) =>
+                    prev.map((list) =>
+                        getListId(list)?.toString() === resolvedListId
+                            ? { ...list, cards: [...list.cards, createdTask] }
+                            : list
+                    )
+                );
+                closeAddItemModal();
+                handleRetryListsFetch();
+            }
             return;
         }
 
@@ -869,7 +1102,7 @@ const BoardPage = () => {
                                 ...card,
                                 title: trimmedTitle,
                                 description: newItemDesc,
-                                members: newItemMembers,
+                                members: normalizedMembers,
                                 dueDate: newItemDate,
                                 priority: newItemPriority
                             }
@@ -877,27 +1110,30 @@ const BoardPage = () => {
                     )
                 );
             } else {
-                setLists((prev) =>
-                    prev.map((list) =>
-                        list.id === addItemModal.listId
-                            ? {
-                                ...list,
-                                cards: list.cards.map((card) =>
-                                    card.id === addItemModal.editId
-                                        ? {
-                                            ...card,
-                                            title: trimmedTitle,
-                                            description: newItemDesc,
-                                            members: newItemMembers,
-                                            dueDate: newItemDate,
-                                            priority: newItemPriority
-                                        }
-                                        : card
-                                )
-                            }
-                            : list
-                    )
-                );
+                const updatedTask = await updateTaskOnServer(addItemModal.editId, {
+                    title: trimmedTitle,
+                    description: newItemDesc,
+                    members: normalizedMembers,
+                    dueDate: newItemDate,
+                    priority: newItemPriority,
+                });
+
+                if (updatedTask) {
+                    setLists((prev) =>
+                        prev.map((list) =>
+                            getListId(list)?.toString() === (addItemModal.listId ? addItemModal.listId.toString() : '')
+                                ? {
+                                    ...list,
+                                    cards: list.cards.map((card) =>
+                                        card.id === addItemModal.editId
+                                            ? { ...card, ...updatedTask }
+                                            : card
+                                    )
+                                }
+                                : list
+                        )
+                    );
+                }
             }
             closeAddItemModal();
             return;
@@ -908,7 +1144,7 @@ const BoardPage = () => {
                 id: Date.now(),
                 title: trimmedTitle,
                 description: newItemDesc,
-                members: newItemMembers,
+                members: normalizedMembers,
                 dueDate: newItemDate,
                 priority: newItemPriority,
                 createdAt: new Date().toISOString()
@@ -930,8 +1166,10 @@ const BoardPage = () => {
     };
 
     const openEditListModal = (list) => {
+        const resolvedId = getListId(list);
+        console.info('[BoardPage] Opening edit list modal', { listId: resolvedId, list });
         setNewItemText(list.title);
-        setAddItemModal({ isOpen: true, type: 'edit-list', editId: list.id });
+        setAddItemModal({ isOpen: true, type: 'edit-list', editId: resolvedId });
         setActiveListMenu(null);
         closeContextMenu();
     };
@@ -939,7 +1177,7 @@ const BoardPage = () => {
     const openEditTaskModal = (task, listId) => {
         setNewItemText(task.title);
         setNewItemDesc(task.description || "");
-        setNewItemMembers(task.members || "");
+        setNewItemMembers(normalizeMemberIds(task.members));
         setNewItemDate(task.dueDate || "");
         setNewItemPriority(task.priority || "Medium");
         setAddItemModal({ isOpen: true, type: 'edit-task', listId: listId, editId: task.id });
@@ -947,31 +1185,38 @@ const BoardPage = () => {
     };
 
     const deleteList = async (listId) => {
-        if (!listId) return;
+        const resolvedId = listId ? listId.toString() : '';
+        if (!resolvedId) return;
 
-        if (isTempListId(listId)) {
-            setLists((prev) => prev.filter((l) => l.id !== listId));
+        if (isTempListId(resolvedId)) {
+            setLists((prev) => prev.filter((l) => getListId(l) !== resolvedId));
             setActiveListMenu(null);
             closeContextMenu();
             return;
         }
 
-        const wasDeleted = await deleteListOnServer(listId);
+        console.info('[BoardPage] Deleting list from UI', { listId: resolvedId });
+        const wasDeleted = await deleteListOnServer(resolvedId);
         if (wasDeleted) {
-            setLists((prev) => prev.filter((l) => l.id !== listId));
+            setLists((prev) => prev.filter((l) => getListId(l) !== resolvedId));
             handleRetryListsFetch();
         }
         setActiveListMenu(null);
         closeContextMenu();
     };
 
-    const deleteTask = (listId, taskId) => {
+    const deleteTask = async (listId, taskId) => {
         if (listId === 'inbox') {
             setInboxCards(inboxCards.filter(c => c.id !== taskId));
         } else {
-            setLists(lists.map(list =>
-                list.id === listId ? { ...list, cards: list.cards.filter(c => c.id !== taskId) } : list
-            ));
+            const wasDeleted = await deleteTaskOnServer(taskId);
+            if (wasDeleted) {
+                setLists(lists.map(list =>
+                    getListId(list)?.toString() === (listId ? listId.toString() : '')
+                        ? { ...list, cards: list.cards.filter(c => c.id !== taskId) }
+                        : list
+                ));
+            }
         }
         closeContextMenu();
     };
@@ -1307,6 +1552,15 @@ const BoardPage = () => {
         setIsSwitchBoardsModalOpen(!isSwitchBoardsModalOpen);
     };
 
+    const handleMemberSelectChange = (event) => {
+        const values = Array.from(event.target.selectedOptions || []).map((option) => option.value);
+        setNewItemMembers(values);
+    };
+
+    const handleMemberFallbackInput = (event) => {
+        setNewItemMembers(normalizeMemberIds(event.target.value));
+    };
+
     const handleLogoClick = () => {
         navigate('/dash');
     };
@@ -1317,10 +1571,20 @@ const BoardPage = () => {
     };
 
     const addTaskToList = (listId) => {
+        setNewItemText('');
+        setNewItemDesc('');
+        setNewItemMembers([]);
+        setNewItemDate('');
+        setNewItemPriority('Medium');
         setAddItemModal({ isOpen: true, type: 'task', listId });
     };
 
     const addCardToInbox = () => {
+        setNewItemText('');
+        setNewItemDesc('');
+        setNewItemMembers([]);
+        setNewItemDate('');
+        setNewItemPriority('Medium');
         setAddItemModal({ isOpen: true, type: 'inbox' });
     };
 
@@ -1376,7 +1640,7 @@ const BoardPage = () => {
         if (source.droppableId === 'inbox') {
             sourceCards = newInbox;
         } else {
-            const sourceList = newLists.find(l => l.id.toString() === source.droppableId);
+            const sourceList = newLists.find((l) => getListId(l)?.toString() === source.droppableId);
             if (sourceList) sourceCards = sourceList.cards;
         }
 
@@ -1385,7 +1649,7 @@ const BoardPage = () => {
         if (destination.droppableId === 'inbox') {
             destCards = newInbox;
         } else {
-            const destList = newLists.find(l => l.id.toString() === destination.droppableId);
+            const destList = newLists.find((l) => getListId(l)?.toString() === destination.droppableId);
             if (destList) destCards = destList.cards;
         }
 
@@ -1513,6 +1777,7 @@ const BoardPage = () => {
                                                                     <div className="card-meta">
                                                                         {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
                                                                         {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
+                                                                        {formatMembersDisplay(task.members) && <span>👤 {formatMembersDisplay(task.members)}</span>}
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -1577,8 +1842,9 @@ const BoardPage = () => {
                                             {...provided.droppableProps}
                                         >
                                             {lists.map((list, index) => {
+                                                const listDroppableId = (getListId(list) || `list-${index}`).toString();
                                                 return (
-                                                    <Draggable key={list.id} draggableId={list.id.toString()} index={index}>
+                                                    <Draggable key={listDroppableId} draggableId={listDroppableId} index={index}>
                                                         {(provided) => (
                                                             <div
                                                                 className="list-column"
@@ -1619,7 +1885,7 @@ const BoardPage = () => {
                                                                         )}
                                                                     </div>
                                                                 </div>
-                                                                <Droppable droppableId={list.id.toString()} type="task">
+                                                                <Droppable droppableId={listDroppableId} type="task">
                                                                     {(provided) => (
                                                                         <div
                                                                             className="list-cards"
@@ -1627,36 +1893,39 @@ const BoardPage = () => {
                                                                             {...provided.droppableProps}
                                                                             style={{ minHeight: '10px' }}
                                                                         >
-                                                                            {list.cards.map((task, i) => (
-                                                                                <Draggable key={task.id} draggableId={task.id.toString()} index={i}>
-                                                                                    {(provided) => (
-                                                                                        <div
-                                                                                            key={task.id || i}
-                                                                                            className="card"
-                                                                                            onClick={() => openTaskDetails(task)}
-                                                                                            ref={provided.innerRef}
-                                                                                            {...provided.draggableProps}
-                                                                                            {...provided.dragHandleProps}
-                                                                                            style={{ ...provided.draggableProps.style, marginBottom: '8px' }}
-                                                                                        >
-                                                                                            <div className="card-header">
-                                                                                                <span>{task.title}</span>
-                                                                                                <div style={{ position: 'relative' }}>
-                                                                                                    <FiMoreVertical
-                                                                                                        className="card-actions"
-                                                                                                        onClick={(e) => handleContextMenuClick(e, 'task', task, list.id)}
-                                                                                                    />
+                                                                            {list.cards.map((task, i) => {
+                                                                                const taskId = (task.id || task._id || task.cardId || `task-${listDroppableId}-${i}`).toString();
+                                                                                return (
+                                                                                    <Draggable key={taskId} draggableId={taskId} index={i}>
+                                                                                        {(provided) => (
+                                                                                            <div
+                                                                                                key={taskId}
+                                                                                                className="card"
+                                                                                                onClick={() => openTaskDetails(task)}
+                                                                                                ref={provided.innerRef}
+                                                                                                {...provided.draggableProps}
+                                                                                                {...provided.dragHandleProps}
+                                                                                                style={{ ...provided.draggableProps.style, marginBottom: '8px' }}
+                                                                                            >
+                                                                                                <div className="card-header">
+                                                                                                    <span>{task.title}</span>
+                                                                                                    <div style={{ position: 'relative' }}>
+                                                                                                        <FiMoreVertical
+                                                                                                            className="card-actions"
+                                                                                                            onClick={(e) => handleContextMenuClick(e, 'task', task, list.id)}
+                                                                                                        />
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div className="card-meta">
+                                                                                                    {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
+                                                                                                    {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
+                                                                                                    {formatMembersDisplay(task.members) && <span>👤 {formatMembersDisplay(task.members)}</span>}
                                                                                                 </div>
                                                                                             </div>
-                                                                                            <div className="card-meta">
-                                                                                                {task.priority && <span className={`badge ${task.priority.toLowerCase()}`}>{task.priority}</span>}
-                                                                                                {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>}
-                                                                                                {task.members && <span>👤 {task.members}</span>}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </Draggable>
-                                                                            ))}
+                                                                                        )}
+                                                                                    </Draggable>
+                                                                                );
+                                                                            })}
                                                                             {provided.placeholder}
                                                                         </div>
                                                                     )}
@@ -2193,12 +2462,29 @@ const BoardPage = () => {
                                         <div className="form-row">
                                             <div className="form-group">
                                                 <label>Members</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Add members encoded..."
-                                                    value={newItemMembers}
-                                                    onChange={(e) => setNewItemMembers(e.target.value)}
-                                                />
+                                                {boardMemberOptions.length ? (
+                                                    <MemberSelect
+                                                        as="select"
+                                                        multiple
+                                                        value={newItemMembers}
+                                                        onChange={handleMemberSelectChange}
+                                                        style={{ minHeight: '96px' }}
+                                                    >
+                                                        {boardMemberOptions.map((option) => (
+                                                            <option key={option.id} value={option.id}>
+                                                                {option.label}
+                                                            </option>
+                                                        ))}
+                                                    </MemberSelect>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Enter member ids separated by comma"
+                                                        value={Array.isArray(newItemMembers) ? newItemMembers.join(', ') : ''}
+                                                        onChange={handleMemberFallbackInput}
+                                                    />
+                                                )}
+                                                <small className="help-text">Select board members to assign. IDs are sent to the API.</small>
                                             </div>
                                             <div className="form-group">
                                                 <label>Due Date</label>
@@ -2284,7 +2570,7 @@ const BoardPage = () => {
                                         <FiUsers className="task-detail-icon" />
                                         <div className="task-detail-content">
                                             <div className="task-detail-label">Members</div>
-                                            <div className="task-detail-value">{viewTaskModal.task.members || "None"}</div>
+                                            <div className="task-detail-value">{formatMembersDisplay(viewTaskModal.task.members) || "None"}</div>
                                         </div>
                                     </div>
 
