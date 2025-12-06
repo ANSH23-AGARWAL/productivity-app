@@ -39,7 +39,8 @@ import {
   ThemeToggleButton,
   MemberSelect,
   PrioritySelect,
-  AddCardFloatingButton
+  AddCardFloatingButton,
+  SettingsModalContent
 } from './style.js';
 
 const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api/').replace(/\/+$/, '');
@@ -103,7 +104,8 @@ const BoardPage = () => {
   const navigate = useNavigate();
   const [panelOpen, setPanelOpen] = useState(null);
   const [addCardModalOpen, setAddCardModalOpen] = useState(false);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(DEFAULT_USER_SETTINGS.preferredTheme);
+  const [userSettings, setUserSettings] = useState(() => readStoredUserSettings());
   const {
     cardTitle,
     setCardTitle,
@@ -135,6 +137,7 @@ const BoardPage = () => {
   const [editingBoardId, setEditingBoardId] = useState(null);
   const [isLoadingBoards, setIsLoadingBoards] = useState(false);
   const [openCardMenuId, setOpenCardMenuId] = useState(null);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const trashedBoardIds = useMemo(
     () =>
       new Set(
@@ -284,6 +287,20 @@ const BoardPage = () => {
   }, [theme]);
 
   useEffect(() => {
+    if (!userSettings?.preferredTheme) return;
+    setTheme((current) => (current === userSettings.preferredTheme ? current : userSettings.preferredTheme));
+  }, [userSettings?.preferredTheme]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      window.localStorage.setItem(USER_SETTINGS_STORAGE_KEY, JSON.stringify(userSettings));
+    } catch (error) {
+      console.warn('Unable to persist user settings', error);
+    }
+  }, [userSettings]);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
       window.localStorage.setItem('trashedBoards', JSON.stringify(deletedFiles));
@@ -343,8 +360,41 @@ const BoardPage = () => {
   }, [cards]);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-    notifySuccess(`${theme === 'light' ? 'Dark' : 'Light'} mode activated!`);
+    setTheme((prevTheme) => {
+      const nextTheme = prevTheme === 'light' ? 'dark' : 'light';
+      setUserSettings((prevSettings) => ({ ...prevSettings, preferredTheme: nextTheme }));
+      notifySuccess(`${nextTheme === 'light' ? 'Light' : 'Dark'} mode activated!`);
+      return nextTheme;
+    });
+  };
+
+  const openSettingsModal = () => {
+    setPanelOpen(null);
+    setIsSettingsModalOpen(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalOpen(false);
+  };
+
+  const handleSettingsToggle = (key) => {
+    setUserSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSettingsSelectChange = (key, value) => {
+    setUserSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handlePreferredThemeChange = (value) => {
+    setUserSettings((prev) => ({ ...prev, preferredTheme: value }));
+    setTheme(value);
+    notifySuccess(`${value === 'light' ? 'Light' : 'Dark'} mode activated!`);
+  };
+
+  const handleSettingsReset = () => {
+    setUserSettings({ ...DEFAULT_USER_SETTINGS });
+    setTheme(DEFAULT_USER_SETTINGS.preferredTheme);
+    notifySuccess('Settings reset to defaults');
   };
 
   const handleLogoClick = () => {
@@ -785,7 +835,7 @@ const BoardPage = () => {
                 <span>Switch Account</span> <ChevronDown size={18} />
               </div>
               <div className="option-item" onClick={() => navigate('/manage')}>Manage Account</div>
-              <div className="option-item">Settings</div>
+              <div className="option-item" onClick={openSettingsModal}>Settings</div>
               <div className="option-item" onClick={() => navigate('/help')}>Help</div>
               <div className="option-item theme-option">
                 <span>Theme</span>
@@ -957,6 +1007,146 @@ const BoardPage = () => {
               </button>
             </div>
           </ModalContent>
+        </ModalOverlay>
+      )}
+
+      {isSettingsModalOpen && (
+        <ModalOverlay onClick={closeSettingsModal}>
+          <SettingsModalContent onClick={(event) => event.stopPropagation()}>
+            <div className="settings-header">
+              <div>
+                <h3>Workspace Settings</h3>
+                <p className="settings-subtitle">Control how notifications, boards, and appearance behave.</p>
+              </div>
+              <button type="button" className="settings-close" onClick={closeSettingsModal} aria-label="Close settings">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="settings-section">
+              <h4>Notifications</h4>
+              <div className="settings-row">
+                <div>
+                  <p>Email updates</p>
+                  <span className="settings-row-subtitle">Get summaries when boards you follow change.</span>
+                </div>
+                <label className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!userSettings.emailNotifications}
+                    onChange={() => handleSettingsToggle('emailNotifications')}
+                  />
+                  <span className="toggle-track" aria-hidden="true"></span>
+                  <span className="toggle-value">{userSettings.emailNotifications ? 'On' : 'Off'}</span>
+                </label>
+              </div>
+              <div className="settings-row">
+                <div>
+                  <p>Push notifications</p>
+                  <span className="settings-row-subtitle">Stay in the loop for mentions and assignments.</span>
+                </div>
+                <label className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!userSettings.pushNotifications}
+                    onChange={() => handleSettingsToggle('pushNotifications')}
+                  />
+                  <span className="toggle-track" aria-hidden="true"></span>
+                  <span className="toggle-value">{userSettings.pushNotifications ? 'On' : 'Off'}</span>
+                </label>
+              </div>
+              <div className="settings-row">
+                <div>
+                  <p>Daily digest</p>
+                  <span className="settings-row-subtitle">Receive a morning recap of due dates.</span>
+                </div>
+                <label className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!userSettings.dailyDigest}
+                    onChange={() => handleSettingsToggle('dailyDigest')}
+                  />
+                  <span className="toggle-track" aria-hidden="true"></span>
+                  <span className="toggle-value">{userSettings.dailyDigest ? 'On' : 'Off'}</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <h4>Board preferences</h4>
+              <div className="settings-row">
+                <div>
+                  <p>Default view</p>
+                  <span className="settings-row-subtitle">Choose what opens when you visit a board.</span>
+                </div>
+                <select
+                  value={userSettings.defaultBoardView || 'board'}
+                  onChange={(event) => handleSettingsSelectChange('defaultBoardView', event.target.value)}
+                >
+                  <option value="board">Kanban Board</option>
+                  <option value="calendar">Calendar</option>
+                  <option value="inbox">Inbox</option>
+                </select>
+              </div>
+              <div className="settings-row">
+                <div>
+                  <p>Auto-archive completed</p>
+                  <span className="settings-row-subtitle">Move cards marked done to archive after seven days.</span>
+                </div>
+                <label className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!userSettings.autoArchiveCompleted}
+                    onChange={() => handleSettingsToggle('autoArchiveCompleted')}
+                  />
+                  <span className="toggle-track" aria-hidden="true"></span>
+                  <span className="toggle-value">{userSettings.autoArchiveCompleted ? 'On' : 'Off'}</span>
+                </label>
+              </div>
+              <div className="settings-row">
+                <div>
+                  <p>Compact mode</p>
+                  <span className="settings-row-subtitle">Reduce spacing to show more cards on screen.</span>
+                </div>
+                <label className="settings-toggle">
+                  <input
+                    type="checkbox"
+                    checked={!!userSettings.compactMode}
+                    onChange={() => handleSettingsToggle('compactMode')}
+                  />
+                  <span className="toggle-track" aria-hidden="true"></span>
+                  <span className="toggle-value">{userSettings.compactMode ? 'On' : 'Off'}</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="settings-section">
+              <h4>Appearance</h4>
+              <div className="settings-row">
+                <div>
+                  <p>Theme</p>
+                  <span className="settings-row-subtitle">Applies across Dashboard and Board pages.</span>
+                </div>
+                <div className="theme-pill-group">
+                  {['dark', 'light'].map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={`theme-pill ${theme === option ? 'active' : ''}`}
+                      onClick={() => handlePreferredThemeChange(option)}
+                    >
+                      {option === 'dark' ? 'Dark' : 'Light'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="settings-actions">
+              <button type="button" className="ghost-button" onClick={handleSettingsReset}>Reset to defaults</button>
+              <button type="button" className="primary-button" onClick={closeSettingsModal}>Done</button>
+            </div>
+          </SettingsModalContent>
         </ModalOverlay>
       )}
     </AppWrapper>

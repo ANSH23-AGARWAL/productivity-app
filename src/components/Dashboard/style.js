@@ -843,6 +843,216 @@ export const TemplatesModalContent = styled(ModalContent)`
     }
 `;
 
+export const SettingsModalContent = styled(ModalContent)`
+    width: 520px;
+    max-width: 95%;
+    padding: 1.5rem 1.75rem;
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .settings-header h3 {
+      margin-bottom: 0.2rem;
+      text-align: left;
+    }
+
+    .settings-subtitle {
+      margin: 0;
+      color: var(--secondary-text-color);
+      font-size: 0.9rem;
+    }
+
+    .settings-close {
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      padding: 0.2rem;
+      color: var(--secondary-text-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-close:hover {
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .settings-section {
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      background: rgba(10, 15, 31, 0.6);
+    }
+
+    [data-theme='light'] & .settings-section {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(0,0,0,0.05);
+    }
+
+    .settings-section h4 {
+      margin: 0 0 0.8rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8ea0ff;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.65rem 0;
+    }
+
+    .settings-row + .settings-row {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-row p {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .settings-row-subtitle {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.82rem;
+      color: var(--secondary-text-color);
+    }
+
+    .settings-row select {
+      margin-bottom: 0;
+      min-width: 190px;
+    }
+
+    .settings-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .settings-toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toggle-track {
+      width: 46px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--border-color);
+      position: relative;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      top: 3px;
+      left: 4px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .settings-toggle input:checked + .toggle-track {
+      background: #4452FE;
+    }
+
+    .settings-toggle input:checked + .toggle-track::after {
+      transform: translateX(18px);
+    }
+
+    .toggle-value {
+      font-size: 0.75rem;
+      color: var(--secondary-text-color);
+      min-width: 2.5rem;
+      text-align: right;
+    }
+
+    .theme-pill-group {
+      display: inline-flex;
+      gap: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 0.15rem;
+      background: rgba(15, 22, 43, 0.8);
+    }
+
+    [data-theme='light'] & .theme-pill-group {
+      background: rgba(255,255,255,0.9);
+    }
+
+    .theme-pill {
+      border: none;
+      background: transparent;
+      color: var(--secondary-text-color);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-pill.active {
+      background: #4452FE;
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(68, 82, 254, 0.35);
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .ghost-button,
+    .primary-button {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .ghost-button {
+      border: 1px dashed var(--border-color);
+      background: transparent;
+      color: var(--secondary-text-color);
+    }
+
+    .ghost-button:hover {
+      border-color: #4452FE;
+      color: #fff;
+    }
+
+    .primary-button {
+      background: #4452FE;
+      border: none;
+      color: #fff;
+    }
+
+    .primary-button:hover {
+      background: #3845d4;
+    }
+`;
+
 export const TrashSlidePanel = styled(RightPanel)`
     top: auto;
     bottom: 0;
