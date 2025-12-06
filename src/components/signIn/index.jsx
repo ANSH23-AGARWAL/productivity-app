@@ -1,24 +1,76 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Wrapper from './style';
 import { Link, useNavigate } from 'react-router-dom';
+import { notifySuccess, notifyError } from '../../utils/toast';
 
 import { FiArrowLeft } from 'react-icons/fi';
+
+const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api/').replace(/\/+$/, '');
+const LOGIN_ENDPOINT = '/user/login';
+
+const persistAuthUser = (user) => {
+  if (!user) return;
+  try {
+    const serialized = JSON.stringify(user);
+    sessionStorage.setItem('authUser', serialized);
+    localStorage.setItem('authUser', serialized);
+  } catch (storageError) {
+    console.warn('Unable to persist auth user data', storageError);
+  }
+};
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
+
     if (!email || !password) {
-      alert('Please fill in all fields');
+      setFormError('Please fill in all fields');
       return;
     }
 
-    alert('Form submitted');
+    const sanitizedEmail = email.trim().toLowerCase();
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}${LOGIN_ENDPOINT}`,
+        {
+          email: sanitizedEmail,
+          password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
+        }
+      );
 
-    navigate('/verification');
+      const message = response?.data?.message || 'Login successful';
+      notifySuccess(message);
+
+      if (response?.data?.user) {
+        persistAuthUser(response.data.user);
+      }
+
+      setTimeout(() => {
+        navigate('/dash');
+      }, 800);
+    } catch (error) {
+      const serverMessage = error.response?.data?.message;
+      const fallbackMessage = error.message === 'Network Error' ? 'Unable to reach server. Please try again.' : 'Login failed. Please try again.';
+      notifyError(serverMessage || fallbackMessage);
+      console.error('Login API error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -67,7 +119,14 @@ const SignIn = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <button type="submit">Sign In</button>
+              {formError && (
+                <p className="form-error" role="alert">
+                  {formError}
+                </p>
+              )}
+              <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
+              </button>
             </form>
 
             <div className="footer-text">

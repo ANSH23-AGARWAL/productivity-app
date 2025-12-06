@@ -1,33 +1,84 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Wrapper from './style';
 import { Link, useNavigate } from 'react-router-dom';
+import { notifySuccess, notifyError } from '../../utils/toast';
 
 import { FiArrowLeft } from 'react-icons/fi';
+
+const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api/').replace(/\/+$/, '');
+const SIGNUP_ENDPOINT = '/user/send-otp';
 
 const SignUp = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormError('');
 
     if (!name || !email || !password || !confirmPassword) {
-      alert('Please fill in all fields');
+      setFormError('Please fill in all fields');
       return;
     }
 
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      setFormError('Passwords do not match');
       return;
     }
 
-    alert(`Welcome ${name}, your account is created!`);
+    const sanitizedName = name.trim();
+    const sanitizedEmail = email.trim().toLowerCase();
 
-    navigate('/verification');
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}${SIGNUP_ENDPOINT}`,
+        {
+          name: sanitizedName,
+          email: sanitizedEmail,
+          password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000,
+        }
+      );
+
+      const message = response?.data?.message || 'OTP sent successfully';
+      notifySuccess(message);
+
+      const pendingUser = {
+        name: sanitizedName,
+        email: sanitizedEmail,
+        password,
+      };
+
+      try {
+        sessionStorage.setItem('pendingUser', JSON.stringify(pendingUser));
+      } catch (storageError) {
+        console.warn('Unable to persist pending user in sessionStorage', storageError);
+      }
+
+      setTimeout(() => {
+        navigate('/verification', { state: { pendingUser } });
+      }, 800);
+    } catch (error) {
+      const serverMessage = error.response?.data?.message;
+      const fallbackMessage = error.message === 'Network Error' ? 'Unable to reach server. Please try again.' : 'Failed to send OTP. Please try again.';
+      notifyError(serverMessage || fallbackMessage);
+      console.error('Sign up API error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -88,7 +139,14 @@ const SignUp = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              <button type="submit">Sign Up</button>
+              {formError && (
+                <p className="form-error" role="alert">
+                  {formError}
+                </p>
+              )}
+              <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Sending OTP...' : 'Sign Up'}
+              </button>
             </form>
 
             <div className="footer-text">

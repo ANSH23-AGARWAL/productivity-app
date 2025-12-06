@@ -50,7 +50,25 @@ const Wrapper = styled.div`
         padding: 0.5rem 1.5rem;
         border-bottom: 1px solid var(--border-color);
     }
-    .logo-img { height: 28px; object-fit: contain; }
+    .logo-button {
+        background: none;
+        border: none;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+    .logo-button:focus-visible {
+        outline: 2px solid #4452FE;
+        outline-offset: 4px;
+        border-radius: 6px;
+    }
+    .logo-img {
+        height: 36px;
+        width: auto;
+        display: block;
+        object-fit: contain;
+    }
     .header-middle {
         display: flex;
         align-items: center;
@@ -58,6 +76,10 @@ const Wrapper = styled.div`
         flex: 1;
         max-width: 620px;
         margin: 0 2rem;
+    }
+    .search-wrapper {
+        position: relative;
+        flex: 1;
     }
     .search-box {
         display: flex;
@@ -90,6 +112,51 @@ const Wrapper = styled.div`
     }
     .search-input::placeholder {
         color: var(--secondary-text-color);
+    }
+    .search-suggestions {
+        position: absolute;
+        top: calc(100% + 0.4rem);
+        left: 0;
+        right: 0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        max-height: 260px;
+        overflow-y: auto;
+        z-index: 25;
+        padding: 0.3rem 0;
+    }
+    .search-suggestion {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: var(--text-color);
+        text-align: left;
+        padding: 0.55rem 0.95rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .search-suggestion:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    .search-suggestion.empty {
+        cursor: default;
+        color: var(--secondary-text-color);
+    }
+    .suggestion-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .suggestion-subtitle {
+        font-size: 0.8rem;
+        color: var(--secondary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .create-btn {
         background: #4452FE;
@@ -341,6 +408,53 @@ const Wrapper = styled.div`
         display: flex;
         flex-direction: column;
     }
+    .lists-status {
+        margin: 0.5rem 0 0.25rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(68, 82, 254, 0.12);
+        color: #c7d2fe;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .lists-status.error {
+        background: rgba(248, 113, 113, 0.12);
+        color: #fecaca;
+    }
+    .lists-retry {
+        border: none;
+        background: transparent;
+        color: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0.1rem 0.35rem;
+    }
+    .lists-retry:hover {
+        text-decoration: underline;
+    }
+    @keyframes boardSwitchPulse {
+        0% {
+            opacity: 0.45;
+            transform: scale(0.98);
+            filter: saturate(0.9);
+        }
+        55% {
+            opacity: 1;
+            transform: scale(1.01);
+            filter: saturate(1.05);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+            filter: saturate(1);
+        }
+    }
+    .board-area.board-switching {
+        animation: boardSwitchPulse 0.55s ease-out;
+    }
     .board-lists {
         display: flex;
         gap: 0.75rem;
@@ -580,6 +694,7 @@ const Wrapper = styled.div`
         color: var(--text-color);
         margin-bottom: 1rem;
         font-family: inherit;
+        box-sizing: border-box;
     }
     .modal-content label {
         display: block;
@@ -593,9 +708,11 @@ const Wrapper = styled.div`
     .form-row {
         display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
     }
     .form-row .form-group {
-        flex: 1;
+        flex: 1 1 180px;
+        min-width: 0;
     }
     .modal-content .submit-btn {
         background-color: #4452FE;
@@ -608,6 +725,161 @@ const Wrapper = styled.div`
         transition: background-color 0.2s;
     }
     .modal-content .submit-btn:hover { background-color: #3845d4; }
+
+    .settings-modal {
+        max-width: 560px;
+        width: min(560px, 95%);
+    }
+    .settings-header h3 {
+        margin-bottom: 0.2rem;
+    }
+    .settings-subtitle {
+        margin: 0;
+        color: var(--secondary-text-color);
+        font-size: 0.85rem;
+    }
+    .settings-section {
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.2rem;
+        background: rgba(15, 22, 43, 0.85);
+    }
+    .settings-section h4 {
+        margin: 0 0 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.78rem;
+        color: #8ea0ff;
+    }
+    .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.65rem 0;
+    }
+    .settings-row + .settings-row {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .settings-row p {
+        margin: 0;
+        font-weight: 600;
+    }
+    .settings-row-subtitle {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        color: var(--secondary-text-color);
+    }
+    .settings-row select {
+        min-width: 180px;
+        margin-bottom: 0;
+    }
+    .settings-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+    }
+    .settings-toggle input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .toggle-track {
+        width: 44px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--border-color);
+        position: relative;
+        transition: background 0.2s ease;
+    }
+    .toggle-track::after {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #ffffff;
+        top: 3px;
+        left: 4px;
+        transition: transform 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .settings-toggle input:checked + .toggle-track {
+        background: #4452FE;
+    }
+    .settings-toggle input:checked + .toggle-track::after {
+        transform: translateX(18px);
+    }
+    .toggle-value {
+        font-size: 0.75rem;
+        color: var(--secondary-text-color);
+        min-width: 2.5rem;
+        text-align: right;
+    }
+    .theme-pill-group {
+        display: inline-flex;
+        gap: 0.5rem;
+        padding: 0.2rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-color);
+        background: rgba(6, 11, 25, 0.9);
+    }
+    .theme-pill {
+        border: none;
+        background: transparent;
+        color: var(--secondary-text-color);
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .theme-pill.active {
+        background: #4452FE;
+        color: #fff;
+        box-shadow: 0 10px 25px rgba(68, 82, 254, 0.35);
+    }
+    .settings-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .settings-actions .primary-button,
+    .settings-actions .ghost-button {
+        flex: 1;
+        text-align: center;
+    }
+    .ghost-button {
+        background: transparent;
+        border: 1px dashed var(--border-color);
+        color: var(--secondary-text-color);
+        padding: 0.65rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .ghost-button:hover {
+        border-color: #4452FE;
+        color: #ffffff;
+    }
+    .settings-modal .primary-button {
+        background: #4452FE;
+        border: none;
+        color: #ffffff;
+        padding: 0.65rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .settings-modal .primary-button:hover {
+        background: #3845d4;
+    }
 
     /* Neo Modern Pop-ups (Replacing White) */
     /* Shared styles update for consistency, overriding previous overrides if necessary */

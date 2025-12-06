@@ -15,28 +15,39 @@ import SwitchAccount from './components/SwitchAccount';
 import Collaborators from './components/Collaborators';
 
 import { BrowserRouter,Routes, Route } from "react-router-dom"  
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
   return (
     <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<WelcomePage />} />
-      <Route path="/welcome" element={<WelcomePage />} />
-      <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/sign-in" element={<SignIn />} />
-      <Route path="/verification" element={<Verification />} />
-      <Route path="/about-us" element={<AboutUs />} />
-  <Route path="/contact" element={<Contact />} />
-  <Route path="/home" element={<HomePage />} />
-  <Route path="/board" element={<BoardPage />} />
-  <Route path="/dash" element={<Dashboard />} />
-  <Route path="/task" element={<Taskpage />} />
-  <Route path="/manage" element={<ManageAccount />} />
-  <Route path="/help" element={<HelpPage />} />
-  <Route path="/switch" element={<SwitchAccount />} />
-  <Route path="/coll" element={<Collaborators />} />
-    </Routes>  
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/welcome" element={<WelcomePage />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/verification" element={<Verification />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/board" element={<BoardPage />} />
+        <Route path="/dash" element={<Dashboard />} />
+        <Route path="/task" element={<Taskpage />} />
+        <Route path="/manage" element={<ManageAccount />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/switch" element={<SwitchAccount />} />
+        <Route path="/coll" element={<Collaborators />} />
+      </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="dark"
+      />
     </BrowserRouter> 
       
     

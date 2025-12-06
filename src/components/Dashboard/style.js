@@ -108,14 +108,26 @@ export const Header = styled.header`
     right: 0;
     z-index: 1001;
 
-    .header-left .logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: var(--text-color);
-      letter-spacing: 0.5px;
-      background: linear-gradient(90deg, #4452FE, #2FAFCC, #9B5CFF);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .header-left .logo-button {
+      background: none;
+      border: none;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .header-left .logo-button:focus-visible {
+      outline: 2px solid #4452FE;
+      outline-offset: 4px;
+      border-radius: 6px;
+    }
+
+    .header-left .logo-img {
+      height: 40px;
+      width: auto;
+      display: block;
+      object-fit: contain;
     }
 
     .header-right {
@@ -283,7 +295,18 @@ export const ContentArea = styled.div`
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
+
+      .card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .card-header h3 {
+        flex: 1;
+      }
 
       h3 {
         font-size: 1.5rem;
@@ -334,20 +357,66 @@ export const ContentArea = styled.div`
         margin-top: 0.5rem;
       }
 
-      .delete-card-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
+      .card-action-container {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .card-action-trigger {
         background: none;
         border: none;
         color: var(--secondary-text-color);
         cursor: pointer;
-        padding: 5px;
+        padding: 0.25rem;
         border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, color 0.2s ease;
+
         &:hover {
-          color: #ff4d4d;
-          background-color: rgba(255, 77, 77, 0.1);
+          background-color: var(--button-hover-bg);
+          color: var(--accent-color);
         }
+      }
+
+      .card-action-menu {
+        position: absolute;
+        top: 120%;
+        right: 0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        z-index: 10;
+      }
+
+      .card-action-menu button {
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+        color: var(--secondary-text-color);
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+
+      .card-action-menu button:hover {
+        background-color: var(--button-hover-bg);
+        color: var(--accent-color);
+      }
+
+      .card-action-menu button.danger {
+        color: #ff6b6b;
+      }
+
+      .card-action-menu button.danger:hover {
+        background-color: #ff6b6b;
+        color: #ffffff;
       }
     }
 
@@ -688,6 +757,42 @@ export const ModalContent = styled.div`
         font-size: 0.85rem;
         color: var(--secondary-text-color);
       }
+
+      .help-text {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 0.75rem;
+        color: var(--secondary-text-color);
+      }
+
+      .invite-chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .invite-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        background-color: var(--button-bg);
+        border: 1px solid var(--border-color);
+        font-size: 0.8rem;
+        color: var(--text-color);
+      }
+
+      .invite-chip button {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        font-size: 0.85rem;
+        line-height: 1;
+        padding: 0;
+      }
     }
 
     .modal-buttons {
@@ -743,11 +848,13 @@ export const TrashSlidePanel = styled(RightPanel)`
     bottom: 0;
     left: 220px;
     width: calc(100% - 220px);
-    height: 250px;
-    transform: translateY(0);
+    width: calc(100% - 220px);
+    height: 320px;
     box-shadow: 0 -4px 15px var(--shadow);
     flex-direction: column;
 
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
     .panel-header {
       h3 {
         color: #ff6347;
@@ -756,13 +863,115 @@ export const TrashSlidePanel = styled(RightPanel)`
 
     .panel-content {
       justify-content: flex-start;
-      .deleted-items-list {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        .deleted-item {
-          background-color: var(--button-bg);
+      justify-content: flex-start;
+      align-items: stretch;
+      width: 100%;
+      padding-right: 1rem;
+      overflow-y: auto;
+    }
+
+    .trash-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .trash-card {
+      background-color: var(--card-bg);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      box-shadow: inset 0 0 0 1px var(--card-border);
+    }
+
+    .trash-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .trash-card-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+
+    .trash-badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background-color: rgba(255, 99, 71, 0.15);
+      color: #ff9b7a;
+      border: 1px solid rgba(255, 99, 71, 0.3);
+    }
+
+    .trash-description {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--secondary-text-color);
+      min-height: 40px;
+    }
+
+    .trash-meta {
+      font-size: 0.8rem;
+      color: var(--secondary-text-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .trash-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: auto;
+    }
+
+    .trash-actions button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+    }
+
+    .trash-actions button svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .restore-button {
+      border-color: rgba(68, 82, 254, 0.4);
+      color: var(--accent-color);
+      background-color: rgba(68, 82, 254, 0.08);
+    }
+
+    .restore-button:hover {
+      background-color: rgba(68, 82, 254, 0.18);
+    }
+
+    .delete-button {
+      border-color: rgba(255, 99, 71, 0.4);
+      color: #ff7b73;
+      background-color: rgba(255, 99, 71, 0.08);
+    }
+
+    .delete-button:hover {
+      background-color: rgba(255, 99, 71, 0.18);
           padding: 0.8rem 1rem;
           border-radius: 8px;
           display: flex;
